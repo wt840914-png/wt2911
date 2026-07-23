@@ -1,0 +1,1627 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>市场陌拜跟踪系统 — 京顺医院</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--primary:#101843;--primary-light:#1a2a6b;--accent:#FF6B35;--accent-light:#fff4ef;--bg:#f5f6fa;--card:#fff;--text:#333;--text2:#666;--border:#e0e0e0;--success:#27ae60;--danger:#e74c3c;--warn:#f39c12;--radius:8px;}
+body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+/* LOGIN */
+.login-page{display:flex;justify-content:center;align-items:center;min-height:100vh;background:linear-gradient(135deg,#101843 0%,#1a2a6b 100%);}
+.login-box{background:#fff;border-radius:12px;padding:36px;width:380px;box-shadow:0 10px 40px rgba(0,0,0,.2);}
+.login-box h1{text-align:center;color:var(--primary);font-size:20px;margin-bottom:2px;}
+.login-box .sub{text-align:center;color:var(--text2);font-size:12px;margin-bottom:20px;}
+.login-box .form-group{margin-bottom:14px;}
+.login-box label{display:block;font-size:12px;font-weight:600;margin-bottom:3px;color:var(--text);}
+.login-box input{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;font-family:inherit;}
+.login-box input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 2px rgba(16,24,67,.1);}
+.login-box .btn{width:100%;padding:9px;background:var(--primary);color:#fff;border:none;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer;margin-top:6px;}
+.login-box .btn:hover{background:var(--primary-light);}
+.login-error{color:var(--danger);font-size:12px;text-align:center;margin-top:6px;display:none;}
+.login-box .role-hint{text-align:center;font-size:11px;color:var(--text2);margin-top:8px;}
+
+/* APP LAYOUT */
+.app{display:none;min-height:100vh;}
+.app.show{display:flex;}
+.sidebar{width:230px;background:var(--primary);color:#fff;position:fixed;top:0;left:0;bottom:0;z-index:100;display:flex;flex-direction:column;overflow:hidden;}
+.sidebar .logo{padding:14px 16px 12px;border-bottom:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:6px;}
+.sidebar .logo h1{font-size:15px;letter-spacing:1px;font-weight:700;flex:1;}
+.sidebar .logo .badge-role{font-size:8px;padding:1px 5px;border-radius:3px;font-weight:700;}
+.badge-admin{background:var(--accent);color:#fff;}
+.badge-sales{background:#4fc3f7;color:#101843;}
+.sidebar .nav-section{padding:8px 0 2px 16px;font-size:9.5px;opacity:.5;letter-spacing:1px;text-transform:uppercase;}
+.sidebar nav{flex:1;overflow-y:auto;}
+.sidebar nav a{display:flex;align-items:center;gap:7px;padding:8px 16px;color:rgba(255,255,255,.7);text-decoration:none;font-size:12px;transition:.15s;cursor:pointer;border-left:3px solid transparent;}
+.sidebar nav a:hover,.sidebar nav a.active{background:rgba(255,255,255,.08);color:#fff;}
+.sidebar nav a.active{border-left-color:var(--accent);}
+.sidebar nav a.admin-link{color:rgba(255,183,77,.8);}
+.sidebar .user-info{padding:8px 16px;border-top:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:space-between;font-size:11px;}
+.sidebar .user-info .logout-btn{background:rgba(255,255,255,.1);border:none;color:#fff;padding:2px 8px;border-radius:4px;font-size:10px;cursor:pointer;}
+.main{margin-left:230px;flex:1;padding:18px 24px;}
+
+/* COMMON */
+.page-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+.page-header h2{font-size:17px;color:var(--primary);font-weight:700;}
+.page-header .sub{font-size:11px;color:var(--text2);}
+.page-header .actions{display:flex;gap:6px;}
+
+.card{background:var(--card);border-radius:var(--radius);box-shadow:0 1px 4px rgba(0,0,0,.06);border:1px solid var(--border);margin-bottom:12px;overflow:hidden;}
+.card-header{display:flex;justify-content:space-between;align-items:center;padding:9px 14px;border-bottom:1px solid var(--border);background:#fafbfc;}
+.card-header h3{font-size:13px;color:var(--primary);font-weight:600;}
+.card-header .badge{font-size:10px;padding:1px 7px;border-radius:8px;background:var(--accent-light);color:var(--accent);font-weight:600;}
+.card-body{padding:10px 14px;}
+
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:14px;}
+.stat-card{background:var(--card);border-radius:var(--radius);padding:10px 14px;box-shadow:0 1px 4px rgba(0,0,0,.06);border:1px solid var(--border);}
+.stat-card .label{font-size:10px;color:var(--text2);margin-bottom:1px;}
+.stat-card .value{font-size:20px;font-weight:700;color:var(--primary);}
+.stat-card .sub{font-size:10px;color:var(--text2);margin-top:1px;}
+.stat-card.highlight{border-left:3px solid var(--accent);background:var(--accent-light);}
+
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:11.5px;}
+th{text-align:left;padding:6px 8px;background:#f8f9fc;color:var(--text2);font-weight:600;font-size:10.5px;border-bottom:2px solid var(--border);white-space:nowrap;}
+td{padding:6px 8px;border-bottom:1px solid var(--border);vertical-align:middle;}
+tr:hover td{background:#fafbfc;}
+.tag{display:inline-block;padding:1px 6px;border-radius:7px;font-size:9.5px;font-weight:600;}
+.tag-blue{background:#e8eaf6;color:var(--primary);}
+.tag-orange{background:var(--accent-light);color:var(--accent);}
+.tag-green{background:#e8f5e9;color:var(--success);}
+.tag-gray{background:#f0f0f0;color:var(--text2);}
+.tag-cyan{background:#e0f7fa;color:#00838f;}
+.tag-red{background:#fde8e8;color:var(--danger);}
+
+.btn{display:inline-flex;align-items:center;gap:3px;padding:4px 10px;border-radius:5px;font-size:11px;font-weight:600;cursor:pointer;border:none;transition:.15s;}
+.btn-primary{background:var(--primary);color:#fff;}
+.btn-primary:hover{background:var(--primary-light);}
+.btn-accent{background:var(--accent);color:#fff;}
+.btn-accent:hover{opacity:.9;}
+.btn-outline{background:transparent;color:var(--primary);border:1px solid var(--border);}
+.btn-outline:hover{border-color:var(--primary);}
+.btn-sm{padding:2px 6px;font-size:10px;}
+.btn-danger{background:var(--danger);color:#fff;}
+.btn-success{background:var(--success);color:#fff;}
+.btn-ghost{background:transparent;color:var(--text2);border:1px dashed var(--border);font-size:10px;padding:3px 8px;}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);z-index:2000;justify-content:center;align-items:center;}
+.modal-overlay.show{display:flex;}
+.modal{background:var(--card);border-radius:10px;width:560px;max-width:92vw;max-height:85vh;overflow-y:auto;box-shadow:0 8px 30px rgba(0,0,0,.15);}
+.modal-header{display:flex;justify-content:space-between;align-items:center;padding:10px 18px;border-bottom:1px solid var(--border);}
+.modal-header h3{font-size:14px;color:var(--primary);}
+.modal-close{width:22px;height:22px;border:none;background:#f0f0f0;border-radius:50%;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;color:#666;}
+.modal-body{padding:14px 18px;}
+.modal-footer{padding:8px 18px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:6px;}
+
+/* FORM */
+.form-group{margin-bottom:10px;}
+.form-group label{display:block;font-size:11px;font-weight:600;color:var(--text);margin-bottom:2px;}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:5px 8px;border:1px solid var(--border);border-radius:5px;font-size:11.5px;font-family:inherit;background:#fff;}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 2px rgba(16,24,67,.1);}
+.form-group textarea{resize:vertical;min-height:40px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+
+/* PROGRESS */
+.progress-wrap{display:flex;align-items:center;gap:5px;}
+.progress-bar{flex:1;height:6px;background:#eee;border-radius:3px;overflow:hidden;}
+.progress-bar .fill{height:100%;border-radius:3px;background:var(--accent);transition:.3s;}
+.progress-text{font-size:10px;color:var(--text2);white-space:nowrap;}
+
+.empty-state{text-align:center;padding:20px;color:var(--text2);font-size:12px;}
+.empty-state .icon{font-size:28px;margin-bottom:3px;}
+.empty-state.small{padding:12px;font-size:11px;}
+
+/* STAGE */
+.stage-flow{display:flex;gap:3px;align-items:center;}
+.stage-dot{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;font-size:8px;font-weight:700;border:2px solid var(--border);color:var(--text2);background:#fff;flex-shrink:0;cursor:default;}
+.stage-dot.done{background:var(--success);border-color:var(--success);color:#fff;}
+.stage-dot.active{border-color:var(--accent);color:var(--accent);background:var(--accent-light);}
+.stage-line{width:8px;height:2px;background:var(--border);flex-shrink:0;}
+.stage-line.done{background:var(--success);}
+
+/* PLAN ITEM */
+.plan-item{padding:7px 10px;border-left:3px solid var(--accent);background:#fafbfc;border-radius:4px;margin-bottom:5px;font-size:12px;}
+.plan-item .plan-title{font-weight:600;font-size:12px;color:var(--primary);}
+.plan-item .plan-meta{font-size:10px;color:var(--text2);margin-top:1px;}
+.plan-item.done{border-left-color:var(--success);opacity:.7;}
+
+/* ORG */
+.orggrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;}
+.orgcard{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+.orgcard-head{padding:7px 10px;font-weight:700;font-size:12px;color:#fff;}
+.orgcard-body{padding:7px 10px;}
+.orgcard-body .person-row{display:flex;justify-content:space-between;align-items:center;padding:3px 0;border-bottom:1px solid #f0f0f0;font-size:11px;}
+.orgcard-body .person-row:last-child{border:none;}
+
+/* ADMIN TABS */
+.admin-tabs{display:flex;gap:2px;margin-bottom:10px;flex-wrap:wrap;}
+.admin-tab{padding:5px 12px;border:1px solid var(--border);background:var(--card);border-radius:4px 4px 0 0;font-size:11px;font-weight:600;cursor:pointer;color:var(--text2);border-bottom:2px solid transparent;}
+.admin-tab.active{color:var(--primary);border-color:var(--primary);border-bottom-color:var(--primary);}
+.admin-tab:hover{color:var(--primary);}
+
+/* TOAST */
+.toast{position:fixed;top:16px;right:16px;z-index:3000;background:var(--primary);color:#fff;padding:8px 16px;border-radius:6px;font-size:12px;opacity:0;transition:opacity .3s;pointer-events:none;}
+.toast.show{opacity:1;}
+
+/* SALES OVERVIEW on admin */
+.sales-card{display:flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--border);border-radius:6px;margin-bottom:6px;cursor:pointer;transition:.15s;}
+.sales-card:hover{background:#fafbfc;border-color:var(--primary);}
+.sales-card .avatar{width:32px;height:32px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;}
+.sales-card .info{flex:1;}
+.sales-card .info .name{font-weight:600;font-size:12.5px;}
+.sales-card .info .meta{font-size:10px;color:var(--text2);}
+.sales-card .status{font-size:10px;padding:2px 6px;border-radius:4px;}
+
+@media(max-width:900px){
+  .sidebar{width:56px;}
+  .sidebar .logo h1,.sidebar .nav-section span,.sidebar nav a span,.sidebar .user-info span{display:none;}
+  .sidebar .logo .badge-role{display:none;}
+  .sidebar nav a{justify-content:center;padding:8px;font-size:14px;}
+  .sidebar .logo{padding:10px;justify-content:center;}
+  .sidebar .user-info{justify-content:center;padding:6px;}
+  .main{margin-left:56px;padding:10px;}
+  .form-row{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-page" id="loginPage">
+  <div class="login-box">
+    <h1>🏥 陌拜跟踪系统</h1>
+    <p class="sub">京顺医院 · 社服部</p>
+    <div class="form-group"><label>账号</label><input id="loginUser" placeholder="输入账号" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <div class="form-group"><label>密码</label><input id="loginPass" type="password" placeholder="输入密码" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <button class="btn" onclick="doLogin()">登 录</button>
+    <div class="login-error" id="loginError">账号或密码错误</div>
+    <div class="role-hint">管理员 / 业务员统一入口</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app" id="app">
+  <aside class="sidebar">
+    <div class="logo">
+      <h1>🏥 陌拜跟踪</h1>
+      <span class="badge-role" id="roleBadge">后台</span>
+    </div>
+    <div class="nav-section"><span>📊 工作台</span></div>
+    <nav id="mainNav">
+      <a class="active" onclick="showPage('dashboard')" data-page="dashboard">📊 总览</a>
+      <a onclick="showPage('databoard')" data-page="databoard">📉 数据看板</a>
+      <a onclick="showPage('targets')" data-page="targets">🎯 目标</a>
+      <a onclick="showPage('visits')" data-page="visits">📋 拜访</a>
+      <a onclick="showPage('plans')" data-page="plans">📅 计划</a>
+      <a onclick="showPage('performance')" data-page="performance">📈 业绩</a>
+    </nav>
+    <div class="nav-section" id="adminNavSection" style="display:none"><span>⚙️ 管理</span></div>
+    <nav id="adminNav" style="display:none">
+      <a class="admin-link" onclick="showPage('org')" data-page="org">🏢 架构</a>
+      <a class="admin-link" onclick="showPage('admin')" data-page="admin">⚙️ 管理后台</a>
+    </nav>
+    <div class="user-info">
+      <span id="userDisplay">👤</span>
+      <button class="logout-btn" onclick="doLogout()">退出</button>
+    </div>
+  </aside>
+  <main class="main" id="mainContent"></main>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-header"><h3 id="modalTitle">标题</h3><button class="modal-close" onclick="closeModal()">✕</button></div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer" id="modalFooter"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// AUTH
+// ============================================================
+const STORE_KEY='jingshun_mobai_v4';
+const TODAY=()=>new Date().toISOString().slice(0,10);
+const NOW=()=>new Date().toISOString();
+const THIS_MONTH=()=>new Date().getMonth()+1;
+
+let currentUser=null; // {id, name, role, personId}
+
+// 岗位业绩目标档位（仅四类）
+const POSITION_KEYS = ['老业务员','业务员','见习业务员','义诊公益'];
+const POSITION_TIERS = {
+  '老业务员':   { base: 300000, sprint: 400000, desc: '从业1年以上' },
+  '业务员':     { base: 100000, sprint: 150000, desc: '试用期已过' },
+  '见习业务员': { base: 50000,  sprint: 80000,  desc: '入职2个月内' },
+  '义诊公益':   { base: 30000,  sprint: 50000,  desc: '义诊/社区/公益' },
+};
+function getPos(p){ return p.position&&POSITION_KEYS.includes(p.position)?p.position:'业务员'; }
+function getBase(p){ const t=POSITION_TIERS[getPos(p)]; return t?t.base:100000; }
+function getSprint(p){ const t=POSITION_TIERS[getPos(p)]; return t?t.sprint:150000; }
+
+const STAGES=[
+  {k:1,name:'信息收集',icon:'🔍',desc:'网上/渠道了解'},
+  {k:2,name:'建立链接',icon:'🤝',desc:'初次接触'},
+  {k:3,name:'关系递进',icon:'📈',desc:'多次拜访'},
+  {k:4,name:'合作转诊',icon:'✅',desc:'达成合作'},
+];
+
+const DEFAULT={
+  config:{title:'京顺医院 · 社服部',goalMin:100000,goalMax:150000,goalMonths:[7,8]},
+  // System users
+  users:[
+    {id:'u_admin',name:'admin',role:'admin',pass:'jingshun2026',personId:null},
+  ],
+  groups:[
+    {name:'区中医院组',color:'#2c6b9e'},
+    {name:'友谊医院组',color:'#8e44ad'},
+    {name:'公益义诊组',color:'#27ae60'},
+    {name:'新媒体品牌企划组',color:'#e67e22'},
+  ],
+  personnel:[
+    {id:'p1',name:'刘天宇',groups:['区中医院组'],sites:'卫生院',phone:'',note:''},
+    {id:'p2',name:'李丽军',groups:['区中医院组'],sites:'义诊组',phone:'',note:''},
+    {id:'p3',name:'杜学佳',groups:['友谊医院组'],sites:'体检业务',phone:'',note:''},
+    {id:'p4',name:'郭素针',groups:['友谊医院组'],sites:'友谊医院',phone:'',note:''},
+    {id:'p5',name:'陈志刚',groups:['公益义诊组'],sites:'120/养老院',phone:'',note:''},
+    {id:'p6',name:'张响',groups:['友谊医院组'],sites:'友谊医院',phone:'',note:'特别勤务队'},
+    {id:'p7',name:'杨子',groups:['—'],sites:'培训带教',phone:'',note:'培训导师'},
+  ],
+  targets:[],
+  visits:[],
+  plans:{weekly:[],monthly:[]},
+  performance:{records:[]},
+  activityLog:[], // {id, userId, userName, role, action, detail, timestamp}
+};
+
+// ============================================================
+// DATA PERSISTENCE — JSON file via server API
+// ============================================================
+const API_BASE = window.location.origin;
+const USE_SERVER = true; // false = fallback to localStorage
+
+let data = null; // Will be initialized async
+let dataReady = false;
+
+async function fetchFromServer() {
+  try {
+    const resp = await fetch(API_BASE + '/api/data');
+    if (!resp.ok) throw new Error('Server returned ' + resp.status);
+    const d = await resp.json();
+    if (d && d.users) {
+      // Migrate: convert single group to groups array
+      if (d.personnel) d.personnel.forEach(p => {
+        if (p.group && !p.groups) { p.groups = [p.group]; delete p.group; }
+      });
+      return d;
+    }
+  } catch(e) {
+    console.warn('Server unavailable, falling back to localStorage:', e.message);
+  }
+  return null;
+}
+
+async function saveToServer(data) {
+  try {
+    await fetch(API_BASE + '/api/data', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(data)
+    });
+    return true;
+  } catch(e) {
+    console.warn('Failed to save to server:', e.message);
+    return false;
+  }
+}
+
+function saveData() {
+  if (!data) return;
+  // Always save to localStorage as backup
+  localStorage.setItem(STORE_KEY, JSON.stringify(data));
+  // Try to save to server (fire-and-forget)
+  saveToServer(data);
+}
+
+async function initData() {
+  // Try server first
+  const serverData = await fetchFromServer();
+  if (serverData) {
+    data = serverData;
+    dataReady = true;
+    ensureAdmin();
+    return;
+  }
+  // Fallback to localStorage
+  try {
+    const r = localStorage.getItem(STORE_KEY);
+    if (r) {
+      data = JSON.parse(r);
+      if (data.personnel) data.personnel.forEach(p => {
+        if (p.group && !p.groups) { p.groups = [p.group]; delete p.group; }
+      });
+    }
+  } catch(e) {}
+  if (!data) {
+    data = JSON.parse(JSON.stringify(DEFAULT));
+  }
+  dataReady = true;
+  ensureAdmin();
+  // Sync to server on next save
+}
+
+function ensureAdmin() {
+  if (!data) return;
+  if (!data.users) data.users = [];
+  if (!data.users.find(u => u.role === 'admin')) {
+    data.users.unshift({id:'u_admin',name:'管理员',role:'admin',pass:'jingshun2026',personId:null});
+    saveData();
+  }
+  // Fix admin name
+  const adminUser = data.users.find(u => u.role === 'admin');
+  if (adminUser && adminUser.name !== 'admin') {
+    adminUser.name = 'admin';
+    saveData();
+  }
+}
+
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,4);}
+function fmt(n){return '¥'+(Number(n)||0).toLocaleString();}
+function pct(a,b){return b?((a/b)*100).toFixed(1):'0.0';}
+function showGroups(p){return p.groups?p.groups.filter(g=>g!=='—').join(', '):p.group||'—';}
+function getWeekStart(d){
+  const dt=d?new Date(d):new Date();
+  const day=dt.getDay();const diff=dt.getDate()-day+(day===0?-6:1);
+  return new Date(dt.setDate(diff)).toISOString().slice(0,10);
+}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);}
+
+// ============================================================
+// AUDIT LOG
+// ============================================================
+function logAction(action,detail){
+  if(!currentUser) return;
+  data.activityLog.push({
+    id:uid(),
+    userId:currentUser.id,
+    userName:currentUser.name,
+    role:currentUser.role,
+    action,detail,
+    timestamp:NOW(),
+  });
+  // Keep max 1000 logs
+  if(data.activityLog.length>1000) data.activityLog=data.activityLog.slice(-800);
+  saveData();
+}
+
+// ============================================================
+// LOGIN
+// ============================================================
+function doLogin(){
+  const u=document.getElementById('loginUser').value.trim();
+  const p=document.getElementById('loginPass').value.trim();
+  if(!data||!dataReady){
+    document.getElementById('loginError').textContent='系统加载中，请稍候...';
+    document.getElementById('loginError').style.display='block';
+    return;
+  }
+  const user=data.users.find(x=>x.name===u||x.id===u);
+  if(user&&user.pass===p){
+    currentUser=user;
+    document.getElementById('loginPage').style.display='none';
+    document.getElementById('app').classList.add('show');
+    document.getElementById('userDisplay').textContent='👤 '+user.name;
+    const badge=document.getElementById('roleBadge');
+    if(user.role==='admin'){
+      badge.textContent='管理';
+      badge.className='badge-role badge-admin';
+      document.getElementById('adminNavSection').style.display='block';
+      document.getElementById('adminNav').style.display='block';
+    } else {
+      badge.textContent='业务';
+      badge.className='badge-role badge-sales';
+      document.getElementById('adminNavSection').style.display='none';
+      document.getElementById('adminNav').style.display='none';
+    }
+    logAction('登录','登录系统');
+    initApp();
+  } else {
+    document.getElementById('loginError').style.display='block';
+  }
+}
+
+function doLogout(){
+  if(currentUser) logAction('退出','退出系统');
+  currentUser=null;
+  document.getElementById('app').classList.remove('show');
+  document.getElementById('loginPage').style.display='flex';
+  document.getElementById('loginPass').value='';
+  document.getElementById('loginError').style.display='none';
+  document.getElementById('adminNavSection').style.display='none';
+  document.getElementById('adminNav').style.display='none';
+}
+
+function isAdmin(){return currentUser&&currentUser.role==='admin';}
+function myPersonId(){return currentUser?currentUser.personId:null;}
+
+// ============================================================
+// ROUTER
+// ============================================================
+function showPage(name){
+  document.querySelectorAll('.sidebar nav a').forEach(a=>a.classList.remove('active'));
+  const el=document.querySelector(`.sidebar nav a[data-page="${name}"]`);
+  if(el) el.classList.add('active');
+  const pages={
+    dashboard:renderDashboard, org:renderOrg, targets:renderTargets,
+    visits:renderVisits, plans:renderPlans, performance:renderPerformance, admin:renderAdmin,
+    databoard:renderDataBoard
+  };
+  if(pages[name]) pages[name]();
+}
+function initApp(){showPage('dashboard');}
+
+// ============================================================
+// FILTER HELPERS
+// ============================================================
+function myTargets(){return isAdmin()?data.targets:data.targets.filter(t=>t.assignee===myPersonId());}
+function myVisits(){return isAdmin()?data.visits:data.visits.filter(v=>v.personId===myPersonId());}
+function myPlans(type){const p=data.plans[type]||[];return isAdmin()?p:p.filter(x=>x.personId===myPersonId());}
+function myPerf(){return isAdmin()?data.performance.records:data.performance.records.filter(r=>r.personId===myPersonId());}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+function renderDashboard(){
+  const tm=THIS_MONTH();const pid=myPersonId();
+  const stageCnt={};STAGES.forEach(s=>stageCnt[s.k]=myTargets().filter(t=>t.stage>=s.k).length);
+  const mVisits=myVisits().filter(v=>v.date&&v.date.startsWith(`2026-0${tm}`)).length;
+  const mPerf=myPerf().filter(r=>r.month===tm);
+  const mTotal=mPerf.reduce((s,r)=>s+(r.amount||0),0);
+
+  // Per-person goals for admin, single for sales
+  let rows=[];
+  if(isAdmin()){
+    const pg={};
+    data.personnel.filter(p=>!p.groups||p.groups.includes('—')===false).forEach(p=>{pg[p.id]={...p,gained:0,target:GOAL_MIN};});
+    data.performance.records.forEach(r=>{
+      if([7,8].includes(r.month)&&pg[r.personId])pg[r.personId].gained+=r.amount||0;
+    });
+    rows=Object.values(pg).sort((a,b)=>b.gained-a.gained);
+  } else if(pid){
+    const p=data.personnel.find(x=>x.id===pid);
+    if(p){
+      let gained=0;
+      data.performance.records.forEach(r=>{if([7,8].includes(r.month)&&r.personId===pid)gained+=r.amount||0;});
+      rows=[{...p,gained,target:GOAL_MIN}];
+    }
+  }
+
+  const wPlans=myPlans('weekly').filter(w=>w.weekStart===getWeekStart());
+  const wDone=wPlans.reduce((s,w)=>s+(w.items?.filter(i=>i.done)?.length||0),0);
+  const wTotal=wPlans.reduce((s,w)=>s+(w.items?.length||0),0);
+
+  const subtitle=isAdmin()?data.config.title:`${currentUser.name} · ${showGroups(data.personnel.find(p=>p.id===pid))||''}`;
+
+  document.getElementById('mainContent').innerHTML=`
+    <div class="page-header"><h2>📊 总览</h2><span class="sub">${TODAY()} · ${subtitle}</span></div>
+    <div class="stats-row">
+      <div class="stat-card highlight"><div class="label">🎯 冲刺目标</div><div class="value">${isAdmin()?fmt(data.personnel.filter(p=>!p.groups||!p.groups.includes('—')).length*GOAL_MIN):fmt(GOAL_MIN)}</div><div class="sub">7-8月 · 已达成 ${fmt(mTotal)}</div></div>
+      <div class="stat-card"><div class="label">🎯 跟进目标</div><div class="value">${myTargets().length}</div><div class="sub">已建链 ${stageCnt[2]||0}</div></div>
+      <div class="stat-card"><div class="label">本月拜访</div><div class="value">${mVisits}</div><div class="sub">本周 ${wDone}/${wTotal}</div></div>
+      <div class="stat-card"><div class="label">${isAdmin()?'在岗人员':'我的业绩'}</div><div class="value">${isAdmin()?data.personnel.filter(p=>!p.groups||!p.groups.includes('—')).length:fmt(mTotal)}</div></div>
+    </div>
+    <!-- 陌拜四步法 + 日周月工作流说明 -->
+    <div class="card"><div class="card-header"><h3>📌 陌拜工作流：日汇报→周计划→月考核</h3></div>
+    <div class="card-body">
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+        ${STAGES.map(s=>`
+        <div style="flex:1;min-width:110px;padding:8px 10px;border:1px solid var(--border);border-radius:6px;background:#fafbfc;text-align:center">
+          <div style="font-size:18px;margin-bottom:2px">${s.icon}</div>
+          <div style="font-weight:700;font-size:12px;color:var(--primary)">第${s.k}步</div>
+          <div style="font-weight:600;font-size:13px;color:var(--accent)">${s.name}</div>
+          <div style="font-size:10px;color:var(--text2);margin-top:2px">${s.desc}</div>
+        </div>`).join('')}
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;font-size:11px;line-height:1.6">
+        <div style="padding:8px 10px;background:#e8f5e9;border-radius:4px">
+          <strong style="color:var(--success)">📱 日跟进（每日21:00前）</strong><br>
+          群发拜访情况 → 同步录入系统 → 更新目标阶段<br>
+          <span style="color:var(--text2)">· 发群：目标名称 + 阶段变化 + 结果<br>· 系统：新增/编辑拜访记录</span>
+        </div>
+        <div style="padding:8px 10px;background:#e3f2fd;border-radius:4px">
+          <strong style="color:var(--primary)">📅 周计划（周一9:00前）</strong><br>
+          制定本周陌拜目标 → 周五提交周总结<br>
+          <span style="color:var(--text2)">· 计划：目标×类型×阶段×行动<br>· 总结：完成动作×业绩×问题</span>
+        </div>
+        <div style="padding:8px 10px;background:#fff3e0;border-radius:4px">
+          <strong style="color:var(--accent)">📊 月考核（每月1-3日）</strong><br>
+          业绩50% + 拜访30% + 过程20% → 电网排名<br>
+          <span style="color:var(--text2)">· 目标：业绩¥10-15w/人<br>· ⚡末位：黄牌→红牌→淘汰</span>
+        </div>
+      </div>
+    </div></div>
+    <div class="card">
+      <div class="card-header"><h3>🏃 增量进度（${fmt(GOAL_MIN)}~${fmt(GOAL_MAX)}）</h3></div>
+      <div class="card-body">
+        ${rows.length?rows.map(p=>{
+          const pr=Math.min(100,(p.gained/p.target)*100);
+          return `<div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;padding:3px 0;border-bottom:1px solid #f0f0f0">
+            <div style="width:50px;font-weight:600;font-size:12px">${p.name}</div>
+            ${isAdmin()?`<div style="width:80px;font-size:10px;color:var(--text2)">${showGroups(p)}</div>`:''}
+            <div class="progress-wrap" style="flex:1"><div class="progress-bar"><div class="fill" style="width:${Math.min(100,pr)}%"></div></div>
+              <span class="progress-text">${fmt(p.gained)}/${fmt(p.target)}</span></div>
+            <div style="width:32px;text-align:right;font-weight:600;font-size:11px;color:${p.gained>=p.target?'var(--success)':'var(--accent)'}">${pr.toFixed(0)}%</div>
+          </div>`;
+        }).join(''):`<div class="empty-state small"><div class="icon">📊</div><p>暂无数据</p></div>`}
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="card"><div class="card-header"><h3>🔍 陌拜漏斗</h3></div><div class="card-body">
+        ${STAGES.map(s=>{
+          const cnt=stageCnt[s.k]||0;
+          return `<div style="display:flex;align-items:center;gap:5px;margin-bottom:4px">
+            <span style="font-size:13px">${s.icon}</span>
+            <span style="width:60px;font-size:10.5px;font-weight:600">${s.name}</span>
+            <div class="progress-bar"><div class="fill" style="width:${myTargets().length?(cnt/myTargets().length*100):0}%;background:#101843"></div></div>
+            <span style="font-size:9px;color:var(--text2);width:20px;text-align:right">${cnt}</span>
+          </div>`;
+        }).join('')}
+      </div></div>
+      <div class="card"><div class="card-header"><h3>📅 本周计划</h3><span class="badge">${getWeekStart()}</span></div><div class="card-body">
+        ${wPlans.length?wPlans.map(w=>{
+          const p=data.personnel.find(x=>x.id===w.personId);
+          return `<div class="plan-item"><div class="plan-title">${p?p.name:'—'} · ${w.title||'周计划'}</div><div class="plan-meta">完成 ${wDone}/${wTotal}</div></div>`;
+        }).join(''):`<div class="empty-state small"><div class="icon">📅</div><p>暂无</p></div>`}
+      </div></div>
+    </div>
+  `;
+}
+
+// ============================================================
+// ORG (same for all, read-only)
+// ============================================================
+function renderOrg(){
+  const cmap={};data.groups.forEach(g=>cmap[g.name]=g.color);
+  document.getElementById('mainContent').innerHTML=`
+    <div class="page-header"><h2>🏢 社服部组织架构</h2></div>
+    <div class="orggrid">${data.groups.map(g=>{
+      const m=data.personnel.filter(p=>p.groups&&p.groups.includes(g.name));
+      return `<div class="orgcard"><div class="orgcard-head" style="background:${cmap[g.name]||'#333'}">${g.name}</div>
+        <div class="orgcard-body">${m.length?m.map(x=>`<div class="person-row"><span><strong>${x.name}</strong>${showGroups(x)?' · '+showGroups(x):''}${x.sites?' · '+x.sites:''}</span><span style="font-size:10px;color:var(--text2)">${x.note||''}</span></div>`).join(''):`<div style="font-size:10px;color:var(--text2);padding:3px 0">暂无</div>`}</div></div>`;
+    }).join('')}</div>
+    <div class="card" style="margin-top:10px"><div class="card-header"><h3>📌 陌拜四步法</h3></div><div class="card-body"><div style="display:flex;gap:6px;flex-wrap:wrap">
+      ${STAGES.map(s=>`<div style="flex:1;min-width:110px;padding:8px;border:1px solid var(--border);border-radius:5px;background:#fafbfc"><div style="font-size:14px">${s.icon}</div><div style="font-weight:600;font-size:11px;color:var(--primary)">第${s.k}步：${s.name}</div><div style="font-size:9px;color:var(--text2)">${s.desc}</div></div>`).join('')}
+    </div></div></div>
+  `;
+}
+
+// ============================================================
+// TARGETS
+// ============================================================
+function renderTargets(){
+  const sorted=[...myTargets()].sort((a,b)=>a.stage-b.stage||(b.updatedAt||'').localeCompare(a.updatedAt||''));
+  const canEdit=isAdmin(); // Sales can see but admin manages targets
+  document.getElementById('mainContent').innerHTML=`
+    <div class="page-header"><h2>🎯 陌拜目标</h2>${canEdit?`<div class="actions"><button class="btn btn-sm btn-primary" onclick="tForm()">+添加</button></div>`:''}</div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="label">总数</div><div class="value">${sorted.length}</div></div>
+      <div class="stat-card"><div class="label">信息收集</div><div class="value">${sorted.filter(t=>t.stage===1).length}</div></div>
+      <div class="stat-card"><div class="label">已建立链接</div><div class="value">${sorted.filter(t=>t.stage>=2).length}</div></div>
+      <div class="stat-card highlight"><div class="label">合作转诊</div><div class="value">${sorted.filter(t=>t.stage>=4).length}</div></div>
+    </div>
+    <div class="card"><div class="card-body">
+      ${sorted.length?sorted.map(t=>{
+        const p=data.personnel.find(x=>x.id===t.assignee);
+        const s=STAGES.find(x=>x.k===t.stage)||STAGES[0];
+        return `<div style="padding:7px 10px;border:1px solid var(--border);border-radius:5px;margin-bottom:5px">
+          <div style="display:flex;justify-content:space-between;align-items:start">
+            <div><strong style="font-size:12.5px">${s.icon} ${t.name}</strong>
+              <span style="font-size:10px;color:var(--text2);margin-left:4px">${t.type||'医院'}${p?` · ${p.name}`:''}${t.dept?' · '+t.dept:''}</span></div>
+            ${canEdit?`<div><button class="btn btn-sm btn-outline" onclick="tForm('${t.id}')">✏️</button><button class="btn btn-sm btn-danger" onclick="tDel('${t.id}')">🗑</button></div>`:''}
+          </div>
+          <div style="display:flex;align-items:center;gap:5px;margin-top:3px">
+            <div class="stage-flow">${STAGES.map((st,i)=>`${i>0?`<div class="stage-line${t.stage>i?' done':''}"></div>`:''}<div class="stage-dot${t.stage>i+1?' done':''}${t.stage===i+1?' active':''}"></div>`).join('')}</div>
+            <span style="font-size:9.5px;color:var(--accent)">${s.name}</span>
+            ${t.note?`<span style="font-size:9px;color:var(--text2)">📝${t.note.slice(0,20)}${t.note.length>20?'...':''}</span>`:''}
+          </div>
+        </div>`;
+      }).join(''):`<div class="empty-state"><div class="icon">🎯</div><p>${isAdmin()?'暂无目标，请到管理后台添加':'暂无分配给你的目标'}</p></div>`}
+    </div></div>
+  `;
+}
+function tForm(editId){
+  const t=editId?data.targets.find(x=>x.id===editId):null;
+  document.getElementById('modalTitle').textContent=t?'编辑目标':'添加目标';
+  document.getElementById('modalBody').innerHTML=`
+    <div class="form-group"><label>目标名称 *</label><input id="tf_name" value="${t?t.name:''}" placeholder="医院/科室/专家姓名"></div>
+    <div class="form-row"><div class="form-group"><label>类型</label><select id="tf_type">${['医院','科室','专家个人','诊所','卫生院','其他'].map(o=>`<option value="${o}"${t&&t.type===o?' selected':''}>${o}</option>`).join('')}</select></div>
+    <div class="form-group"><label>阶段</label><select id="tf_stage">${STAGES.map(s=>`<option value="${s.k}"${t&&t.stage==s.k?' selected':''}>${s.name}</option>`).join('')}</select></div></div>
+    <div class="form-row"><div class="form-group"><label>负责人</label><select id="tf_assign"><option value="">—</option>${data.personnel.map(p=>`<option value="${p.id}"${t&&t.assignee===p.id?' selected':''}>${p.name}</option>`).join('')}</select></div>
+    <div class="form-group"><label>科室/专长</label><input id="tf_dept" value="${t?t.dept:''}"></div></div>
+    <div class="form-group"><label>备注/基础信息</label><textarea id="tf_note">${t?t.note:''}</textarea></div>
+  `;
+  document.getElementById('modalFooter').innerHTML=`<button class="btn btn-outline" onclick="closeModal()">取消</button><button class="btn btn-primary" onclick="tSave('${editId||''}')">保存</button>`;
+  openModal();
+}
+function tSave(editId){
+  const vals={name:document.getElementById('tf_name').value.trim(),type:document.getElementById('tf_type').value,stage:parseInt(document.getElementById('tf_stage').value),assignee:document.getElementById('tf_assign').value,dept:document.getElementById('tf_dept').value.trim(),note:document.getElementById('tf_note').value.trim()};
+  if(!vals.name){alert('请填写名称');return;}
+  if(editId){const t=data.targets.find(x=>x.id===editId);if(t)Object.assign(t,vals,{updatedAt:TODAY()});logAction('编辑目标',vals.name);}
+  else{data.targets.push({id:uid(),...vals,createdAt:TODAY(),updatedAt:TODAY()});logAction('添加目标',vals.name);}
+  saveData();closeModal();toast('已保存');renderTargets();
+}
+function tDel(id){if(confirm('确认删除？')){const t=data.targets.find(x=>x.id===id);data.targets=data.targets.filter(x=>x.id!==id);logAction('删除目标',t?t.name:'');saveData();toast('已删除');renderTargets();}}
+
+// ============================================================
+// VISITS
+// ============================================================
+function renderVisits(){
+  const sorted=[...myVisits()].sort((a,b)=>(b.date||'').localeCompare(a.date||''));
+  document.getElementById('mainContent').innerHTML=`
+    <div class="page-header"><h2>📋 拜访记录</h2><div class="actions"><button class="btn btn-sm btn-primary" onclick="vForm()">+记录</button></div></div>
+    <div class="card"><div class="card-body">
+      ${sorted.length?`<div class="table-wrap"><table><tr><th>日期</th><th>人员</th><th>目标</th><th>阶段</th><th>下次跟进</th><th>备注</th><th>操作</th></tr>
+        ${sorted.slice(0,50).map(v=>{
+          const p=data.personnel.find(x=>x.id===v.personId);
+          const t=data.targets.find(x=>x.id===v.targetId);
+          const s=STAGES.find(x=>x.k===v.stage);
+          return `<tr><td>${v.date||'-'}</td><td>${p?p.name:'—'}</td><td>${t?t.name:'—'}</td><td><span class="tag ${['','tag-gray','tag-blue','tag-orange','tag-green'][v.stage]||'tag-gray'}">${s?s.name:'—'}</span></td><td>${v.nextDate||'—'}</td><td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${v.note||'-'}</td><td><button class="btn btn-sm btn-outline" onclick="vForm('${v.id}')">✏️</button></td></tr>`;
+        }).join('')}</table></div>`:`<div class="empty-state"><div class="icon">📋</div><p>暂无拜访记录</p></div>`}
+    </div></div>
+  `;
+}
+function vForm(editId){
+  const v=editId?data.visits.find(x=>x.id===editId):null;
+  const pid=isAdmin()?'':myPersonId();
+  document.getElementById('modalTitle').textContent=v?'编辑拜访':'记录拜访';
+  document.getElementById('modalBody').innerHTML=`
+    <div class="form-row"><div class="form-group"><label>日期</label><input id="vf_date" type="date" value="${v?v.date:TODAY()}"></div>
+    <div class="form-group"><label>人员</label><select id="vf_person"><option value="">—</option>${data.personnel.map(p=>`<option value="${p.id}"${v&&v.personId===p.id||p.id===pid?' selected':''}>${p.name}</option>`).join('')}</select></div></div>
+    <div class="form-group"><label>拜访目标</label><select id="vf_target"><option value="">—</option>${data.targets.map(t=>`<option value="${t.id}"${v&&v.targetId===t.id?' selected':''}>${t.name}</option>`).join('')}</select></div>
+    <div class="form-row"><div class="form-group"><label>阶段</label><select id="vf_stage">${STAGES.map(s=>`<option value="${s.k}"${v&&v.stage==s.k?' selected':''}>${s.name}</option>`).join('')}</select></div>
+    <div class="form-group"><label>下次跟进</label><input id="vf_next" type="date" value="${v?v.nextDate||'':''}"></div></div>
+    <div class="form-group"><label>拜访关键信息</label><textarea id="vf_note">${v?v.note:''}</textarea></div>
+  `;
+  document.getElementById('modalFooter').innerHTML=`<button class="btn btn-outline" onclick="closeModal()">取消</button><button class="btn btn-primary" onclick="vSave('${editId||''}')">保存</button>`;
+  openModal();
+}
+function vSave(editId){
+  const vals={date:document.getElementById('vf_date').value,personId:document.getElementById('vf_person').value,targetId:document.getElementById('vf_target').value,stage:parseInt(document.getElementById('vf_stage').value),nextDate:document.getElementById('vf_next').value,note:document.getElementById('vf_note').value.trim()};
+  if(!vals.personId||!vals.targetId){alert('请选择人员和目标');return;}
+  const t=data.targets.find(x=>x.id===vals.targetId);
+  if(t&&vals.stage>t.stage){t.stage=vals.stage;t.updatedAt=TODAY();t.visitCount=(t.visitCount||0)+(editId?0:1);}
+  if(editId){const v=data.visits.find(x=>x.id===editId);if(v)Object.assign(v,vals);logAction('编辑拜访',(data.targets.find(x=>x.id===vals.targetId)||{}).name);}
+  else{data.visits.push({id:uid(),...vals});logAction('新增拜访',(data.targets.find(x=>x.id===vals.targetId)||{}).name);}
+  saveData();closeModal();toast('已保存');renderVisits();
+}
+
+// ============================================================
+// PLANS — 考核对齐版（周计划/周总结/月计划/月总结/日汇报）
+// ============================================================
+function renderPlans(){
+  const wPlans=myPlans('weekly').filter(w=>w.weekStart===getWeekStart());
+  const mPlans=myPlans('monthly').filter(w=>w.month===THIS_MONTH());
+  document.getElementById('mainContent').innerHTML=`
+    <div class="page-header"><h2>📅 周计划 & 月计划</h2>
+      <div class="actions">
+        <button class="btn btn-sm btn-primary" onclick="pForm('weekly')">+周计划</button>
+        <button class="btn btn-sm btn-outline" onclick="pForm('summary_weekly')">📝周总结</button>
+        <button class="btn btn-sm btn-primary" onclick="pForm('monthly')">+月计划</button>
+        <button class="btn btn-sm btn-outline" onclick="pForm('summary_monthly')">📝月总结</button>
+        <button class="btn btn-sm btn-accent" onclick="genDailyReport()">📱日汇报</button>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="card"><div class="card-header"><h3>📅 本周计划</h3><span class="badge">${getWeekStart()}</span></div>
+        <div class="card-body">${renderWPlanList(wPlans)}</div></div>
+      <div class="card"><div class="card-header"><h3>📝 本周总结</h3></div>
+        <div class="card-body">${renderWSummaryList(wPlans)}</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+      <div class="card"><div class="card-header"><h3>📅 ${THIS_MONTH()}月计划</h3></div>
+        <div class="card-body">${renderMPlanList(mPlans)}</div></div>
+      <div class="card"><div class="card-header"><h3>📝 ${THIS_MONTH()}月总结</h3></div>
+        <div class="card-body">${renderMSummaryList(mPlans)}</div></div>
+    </div>
+    <div class="card" style="margin-top:10px"><div class="card-header"><h3>📱 日跟进汇报格式参考</h3></div>
+      <div class="card-body">${renderDailyGuide()}</div></div>
+  `;
+}
+
+function renderWPlanList(plans){
+  if(!plans.length) return `<div class="empty-state small"><div class="icon">📅</div><p>暂无周计划</p></div>`;
+  return plans.map(w=>{
+    const p=data.personnel.find(x=>x.id===w.personId);
+    const d=w.items?.filter(i=>i.done)?.length||0;
+    return `<div class="plan-item ${d===w.items?.length&&w.items?.length?'done':''}">
+      <div style="display:flex;justify-content:space-between">
+        <div class="plan-title">${p?p.name:'—'} · ${w.title||'周计划'}</div>
+        <button class="btn btn-sm btn-outline" onclick="pEdit('weekly','${w.id}')">✏️</button>
+      </div>
+      <div class="plan-meta">完成 ${d}/${w.items?.length||0} ${w.area?' · '+w.area:''}</div>
+      ${w.items?.map((item,i)=>`<div style="display:flex;align-items:center;gap:4px;padding:2px 0;font-size:11px">
+        <input type="checkbox" ${item.done?'checked':''} onchange="pToggle('weekly','${w.id}',${i})">
+        <span style="${item.done?'text-decoration:line-through;color:var(--text2)':''}">
+          ${item.target||''} ${item.action||item.content||''} ${item.stage?'['+item.stage+']':''}
+        </span></div>`).join('')||''}
+    </div>`;
+  }).join('');
+}
+
+function renderWSummaryList(plans){
+  const summaries=data.plans.weekly_summary||[];
+  const thisWeek=getWeekStart();
+  const filtered=summaries.filter(s=>s.weekStart===thisWeek);
+  if(!filtered.length) return `<div class="empty-state small"><div class="icon">📝</div><p>暂无周总结</p></div>`;
+  return filtered.map(s=>{
+    const p=data.personnel.find(x=>x.id===s.personId);
+    return `<div class="plan-item">
+      <div class="plan-title">${p?p.name:'—'} · 周总结${s.weekTotal?' 业绩¥'+s.weekTotal:''}</div>
+      <div style="font-size:11px;color:var(--text2);margin-top:4px">存在问题：${s.problems||'无'}</div>
+      ${s.items?.map((item,i)=>`<div style="padding:2px 0;font-size:11px;border-bottom:1px solid #f0f0f0">
+        <strong>${item.target||''}</strong> ${item.action?'→ '+item.action:''}
+        ${item.achieved?'<span class="tag tag-green">'+item.achieved+'</span>':''}
+        ${item.amount?'<span class="tag tag-orange">¥'+item.amount+'</span>':''}
+      </div>`).join('')||''}
+    </div>`;
+  }).join('');
+}
+
+function renderMPlanList(plans){
+  if(!plans.length) return `<div class="empty-state small"><div class="icon">📅</div><p>暂无月计划</p></div>`;
+  return plans.map(w=>{
+    const p=data.personnel.find(x=>x.id===w.personId);
+    return `<div class="plan-item">
+      <div style="display:flex;justify-content:space-between">
+        <div class="plan-title">${p?p.name:'—'} · ${w.title||'月计划'}</div>
+        <button class="btn btn-sm btn-outline" onclick="pEdit('monthly','${w.id}')">✏️</button>
+      </div>
+      ${w.goal?`<div class="plan-meta">🎯目标¥${(w.goal/10000).toFixed(1)}w · 新增${w.newTargets||0}个 · 拜访${w.visits||0}次</div>`:''}
+      ${w.keyTargets?.map((kt,i)=>`<div style="font-size:11px;padding:2px 0">${i+1}. ${kt.name} ${kt.fromStage?'→'+kt.toStage:''} ${kt.strategy?'· '+kt.strategy:''}</div>`).join('')||''}
+    </div>`;
+  }).join('');
+}
+
+function renderMSummaryList(plans){
+  const summaries=data.plans.monthly_summary||[];
+  const thisM=THIS_MONTH();
+  const filtered=summaries.filter(s=>s.month===thisM);
+  if(!filtered.length) return `<div class="empty-state small"><div class="icon">📝</div><p>暂无月总结</p></div>`;
+  return filtered.map(s=>{
+    const p=data.personnel.find(x=>x.id===s.personId);
+    return `<div class="plan-item">
+      <div class="plan-title">${p?p.name:'—'} · 月总结</div>
+      ${s.perfActual?`<div class="plan-meta">📈目标¥${(s.perfGoal/10000).toFixed(1)}w / 实际¥${(s.perfActual/10000).toFixed(1)}w · 完成率${(s.perfActual/(s.perfGoal||1)*100).toFixed(1)}%</div>`:''}
+      ${s.highlight?`<div style="font-size:11px;padding:2px 0"><strong>亮点：</strong>${s.highlight}</div>`:''}
+      ${s.weakness?`<div style="font-size:11px;padding:2px 0"><strong>不足：</strong>${s.weakness}</div>`:''}
+      ${s.gridRisk?`<div style="font-size:11px;padding:2px 0"><strong>⚡电网风险：</strong>${s.gridRisk}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
+// ===== 周计划表单（考核对齐版）=====
+function pForm(type){
+  if(type==='summary_weekly'){pFormWSummary();return;}
+  if(type==='summary_monthly'){pFormMSummary();return;}
+  const isWeekly=type==='weekly';
+  document.getElementById('modalTitle').textContent=isWeekly?'添加周计划':'添加月计划';
+  let items='';
+  const rows=isWeekly?6:5;
+  for(let i=0;i<rows;i++){
+    if(isWeekly){
+      items+=`<div style="display:grid;grid-template-columns:2fr 1fr 1fr 2fr 1.5fr 1fr;gap:4px;margin-bottom:4px">
+        <input id="pi_${i}_target" placeholder="目标名称" style="font-size:10px;padding:3px 5px">
+        <select id="pi_${i}_type" style="font-size:10px;padding:3px 5px">
+          <option value="">类型</option><option>医院</option><option>科室</option><option>专家</option><option>诊所</option><option>卫生院</option>
+        </select>
+        <select id="pi_${i}_stage" style="font-size:10px;padding:3px 5px">
+          <option value="">阶段</option><option>①</option><option>②</option><option>③</option><option>④</option>
+        </select>
+        <input id="pi_${i}_action" placeholder="行动计划" style="font-size:10px;padding:3px 5px">
+        <input id="pi_${i}_result" placeholder="预期成果" style="font-size:10px;padding:3px 5px">
+        <input id="pi_${i}_note" placeholder="备注" style="font-size:10px;padding:3px 5px">
+      </div>`;
+    } else {
+      items+=`<div class="form-row" style="margin-bottom:4px"><input id="pi_${i}" placeholder="重点目标${i+1}" style="flex:1"></div>`;
+    }
+  }
+  document.getElementById('modalBody').innerHTML=`
+    <div class="form-row">
+      <div class="form-group"><label>人员</label>${isAdmin()?`<select id="pf_p"><option value="">—</option>${data.personnel.map(p=>`<option value="${p.id}">${p.name}</option>`).join('')}</select>`:`<strong style="font-size:13px;padding:4px 0;display:block">${(data.personnel.find(p=>p.id===myPersonId())||{}).name||'—'}</strong><input type="hidden" id="pf_p" value="${myPersonId()||''}">`}</div>
+      <div class="form-group"><label>${isWeekly?'负责区域':'月份'}</label>
+        ${isWeekly?`<input id="pf_area" placeholder="如：顺义河东">`:''}
+        <input id="pf_date" type="${isWeekly?'date':'number'}" value="${isWeekly?getWeekStart():THIS_MONTH()}" ${isWeekly?'':'min=1 max=12'}>
+      </div>
+    </div>
+    <div class="form-group"><label>计划标题</label><input id="pf_title" placeholder="${isWeekly?'如：第30周陌拜计划':'如：7月冲刺计划'}"></div>
+    ${isWeekly?`<div class="form-group"><label>本周陌拜目标（目标 | 类型 | 阶段 | 行动计划 | 预期成果 | 备注）</label>${items}
+      <div style="font-size:10px;color:var(--text2);margin-top:2px">阶段：①信息收集 ②建立链接 ③关系递进 ④合作转诊</div></div>`
+      :`<div class="form-group"><label>本月业绩目标</label>
+        <div class="form-row"><input id="pf_goal" type="number" placeholder="业绩目标（元）">
+        <input id="pf_newTargets" type="number" placeholder="新增目标数">
+        <input id="pf_visits" type="number" placeholder="计划拜访次数"></div>
+        <div style="margin-top:6px"><label>重点突破目标（3-5个）</label>${items}</div></div>`}
+  `;
+  document.getElementById('modalFooter').innerHTML=`<button class="btn btn-outline" onclick="closeModal()">取消</button><button class="btn btn-primary" onclick="pSave('${type}')">保存</button>`;
+  openModal();
+}
+
+function pFormWSummary(){
+  const ws=document.getElementById('ws_week')?.value||getWeekStart();
+  const pid=document.getElementById('ws_p')?.value||myPersonId();
+  document.getElementById('modalTitle').textContent='提交周总结（自动汇总日汇报数据）';
+  // Auto-calculate from this week's visit records
+  const weekVisits=data.visits.filter(v=>v.personId===pid&&v.date>=ws&&v.date<getWeekEnd(ws));
+  const weekTargets=[...new Set(weekVisits.map(v=>v.targetId))];
+  // Get this week's performance records
+  const weekPerf=data.performance.records.filter(r=>r.personId===pid&&r.date>=ws&&r.date<getWeekEnd(ws));
+  const weekTotal=weekPerf.reduce((s,r)=>s+(r.amount||0),0);
+  // Build pre-filled rows from visited targets
+  let items='';
+  const targetsToShow=weekTargets.slice(0,6);
+  while(targetsToShow.length<3) targetsToShow.push(null);
+  targetsToShow.forEach((tid,i)=>{
+    const t=data.targets.find(x=>x.id===tid);
+    const visits=weekVisits.filter(v=>v.targetId===tid);
+    const latestStage=visits.length>0?Math.max(...visits.map(v=>v.stage||1)):'';
+    const visitAmt=weekPerf.filter(r=>{const vt=data.targets.find(x=>x.id===tid);return vt&&r.personId===pid;}).reduce((s,r)=>s+(r.amount||0),0);
+    items+=`<div style="display:grid;grid-template-columns:2fr 2fr 1.5fr 1fr 2fr;gap:4px;margin-bottom:4px">
+      <input id="wsi_${i}_target" value="${t?t.name:''}" placeholder="目标名称" style="font-size:10px;padding:3px 5px">
+      <input id="wsi_${i}_action" value="${visits.length?'拜访'+visits.length+'次':''}" placeholder="完成动作" style="font-size:10px;padding:3px 5px">
+      <select id="wsi_${i}_stage" style="font-size:10px;padding:3px 5px"><option value="">阶段</option><option ${latestStage===1?'selected':''}>①</option><option ${latestStage===2?'selected':''}>②</option><option ${latestStage===3?'selected':''}>③</option><option ${latestStage===4?'selected':''}>④</option></select>
+      <input id="wsi_${i}_amount" type="number" value="${visitAmt||''}" placeholder="业绩(元)" style="font-size:10px;padding:3px 5px">
+      <input id="wsi_${i}_next" placeholder="下周计划" style="font-size:10px;padding:3px 5px">
+    </div>`;
+  });
+  document.getElementById('modalBody').innerHTML=`
+    <div style="font-size:11px;color:var(--text2);margin-bottom:6px;background:#e8f5e9;padding:6px 10px;border-radius:4px">
+    ✅ 本周已访目标 ${weekTargets.length}个 · 拜访 ${weekVisits.length}次 · 业绩 ${fmt(weekTotal)}（自动从日汇报汇总）</div>
+    <div class="form-row">
+      <div class="form-group"><label>人员</label>${isAdmin()?`<select id="ws_p"><option value="">—</option>${data.personnel.map(p=>`<option value="${p.id}">${p.name}</option>`).join('')}</select>`:`<strong style="font-size:13px;padding:4px 0;display:block">${data.personnel.find(p=>p.id===myPersonId())?.name||'—'}</strong><input type="hidden" id="ws_p" value="${myPersonId()||''}">`}</div>
+      <div class="form-group"><label>周次</label><input id="ws_week" type="date" value="${ws}"></div>
+    </div>
+    <div class="form-group"><label>本周业绩合计（元）<span style="color:var(--text2);font-weight:normal">（系统自动汇总：${fmt(weekTotal)}）</span></label>
+      <input id="ws_total" type="number" value="${weekTotal}" placeholder="0"></div>
+    <div class="form-group"><label>存在问题/困难</label><textarea id="ws_problems" placeholder="记录本周遇到的困难、被拒原因、竞争情况等"></textarea></div>
+    <div class="form-group"><label>各目标完成情况（自动填入本周拜访记录，可修改）</label>${items}</div>
+  `;
+  document.getElementById('modalFooter').innerHTML=`<button class="btn btn-outline" onclick="closeModal()">取消</button><button class="btn btn-primary" onclick="pSaveWSummary()">保存</button>`;
+  openModal();
+}
+function getWeekEnd(ws){
+  const d=new Date(ws);d.setDate(d.getDate()+6);
+  return d.toISOString().slice(0,10);
+}
+
+function pFormMSummary(){
+  const pid=document.getElementById('ms_p')?.value||myPersonId();
+  const m=THIS_MONTH();
+  document.getElementById('modalTitle').textContent='提交月总结（自动汇总周数据）';
+  // Auto-calculate from this month's data
+  const mPrefix='2026-'+(m<10?'0':'')+m;
+  const monthVisits=data.visits.filter(v=>v.personId===pid&&v.date&&v.date.startsWith(mPrefix));
+  const monthPerf=data.performance.records.filter(r=>r.personId===pid&&r.month===m);
+  const monthTotal=monthPerf.reduce((s,r)=>s+(r.amount||0),0);
+  const goal=getBase(data.personnel.find(x=>x.id===pid))||100000;
+  const newTargetsThisMonth=data.targets.filter(t=>t.assignee===pid&&t.createdAt&&t.createdAt.startsWith(mPrefix)).length;
+  // Get weekly summaries for insights
+  const wsSummaries=(data.plans.weekly_summary||[]).filter(s=>s.personId===pid&&s.weekStart&&s.weekStart.startsWith(mPrefix.slice(0,7)));
+  const highlights=wsSummaries.map(s=>s.problems).filter(Boolean).join('; ');
+  document.getElementById('modalBody').innerHTML=`
+    <div style="font-size:11px;color:var(--text2);margin-bottom:6px;background:#e8f5e9;padding:6px 10px;border-radius:4px">
+    ✅ ${m}月已访 ${monthVisits.length}次 · 业绩 ${fmt(monthTotal)} · 新增目标 ${newTargetsThisMonth}个（自动汇总）</div>
+    <div class="form-row">
+      <div class="form-group"><label>人员</label>${isAdmin()?`<select id="ms_p"><option value="">—</option>${data.personnel.filter(p=>p.group!=='—').map(p=>`<option value="${p.id}">${p.name}</option>`).join('')}</select>`:`<strong style="font-size:13px;padding:4px 0;display:block">${data.personnel.find(p=>p.id===myPersonId())?.name||'—'}</strong><input type="hidden" id="ms_p" value="${myPersonId()||''}">`}</div>
+      <div class="form-group"><label>月份</label><select id="ms_month">${[1,2,3,4,5,6,7,8,9,10,11,12].map(x=>`<option value="${x}"${x===m?' selected':''}>${x}月</option>`).join('')}</select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>业绩目标（元）<span style="color:var(--text2);font-weight:normal">（岗位目标）</span></label><input id="ms_goal" type="number" value="${goal}" placeholder="0"></div>
+      <div class="form-group"><label>实际完成（元）<span style="color:var(--text2);font-weight:normal">（自动汇总：${fmt(monthTotal)}）</span></label><input id="ms_actual" type="number" value="${monthTotal}" placeholder="0"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>新增目标数</label><input id="ms_new" type="number" value="${newTargetsThisMonth}" placeholder="0"></div>
+      <div class="form-group"><label>拜访总次数</label><input id="ms_visits" type="number" value="${monthVisits.length}" placeholder="0"></div>
+    </div>
+    <div class="form-group"><label>本月最大亮点</label><textarea id="ms_highlight" placeholder="写1-2个成功案例"></textarea></div>
+    <div class="form-group"><label>本月最大不足</label><textarea id="ms_weakness" placeholder="写1-2个待改进点"></textarea></div>
+    <div class="form-row">
+      <div class="form-group"><label>下月业绩目标（元）</label><input id="ms_nextGoal" type="number" value="${goal}" placeholder="0"></div>
+      <div class="form-group"><label>⚡电网风险等级</label><select id="ms_grid"><option value="无风险">🟢无风险</option><option value="黄牌预警">🟡黄牌预警</option><option value="红牌预警">🔴红牌预警</option><option value="观察期">⚠️观察期</option></select></div>
+    </div>
+    <div class="form-group"><label>下月必保动作</label><textarea id="ms_action" placeholder="写3个最有信心的突破方向"></textarea></div>
+  `;
+  document.getElementById('modalFooter').innerHTML=`<button class="btn btn-outline" onclick="closeModal()">取消</button><button class="btn btn-primary" onclick="pSaveMSummary()">保存</button>`;
+  openModal();
+}
+
+function pSave(type){
+  const isWeekly=type==='weekly';
+  const personId=document.getElementById('pf_p').value;
+  const title=document.getElementById('pf_title').value.trim();
+  if(!personId){alert('请选择人员');return;}
+  if(isWeekly){
+    const items=[];
+    for(let i=0;i<6;i++){
+      const target=document.getElementById(`pi_${i}_target`)?.value.trim();
+      if(target){
+        items.push({
+          target,
+          type:document.getElementById(`pi_${i}_type`)?.value||'',
+          stage:document.getElementById(`pi_${i}_stage`)?.value||'',
+          action:document.getElementById(`pi_${i}_action`)?.value.trim()||'',
+          result:document.getElementById(`pi_${i}_result`)?.value.trim()||'',
+          note:document.getElementById(`pi_${i}_note`)?.value.trim()||'',
+          done:false,
+        });
+      }
+    }
+    data.plans.weekly.push({
+      id:uid(),personId,title,items,
+      area:document.getElementById('pf_area')?.value.trim()||'',
+      weekStart:document.getElementById('pf_date').value,
+    });
+  } else {
+    const items=[];
+    for(let i=0;i<5;i++){
+      const v=document.getElementById(`pi_${i}`)?.value.trim();
+      if(v) items.push(v);
+    }
+    data.plans.monthly.push({
+      id:uid(),personId,title,items,
+      goal:parseFloat(document.getElementById('pf_goal')?.value)||0,
+      newTargets:parseInt(document.getElementById('pf_newTargets')?.value)||0,
+      visits:parseInt(document.getElementById('pf_visits')?.value)||0,
+      month:parseInt(document.getElementById('pf_date').value),
+    });
+  }
+  logAction(`添加${isWeekly?'周':'月'}计划`,title||'');
+  saveData();closeModal();toast('已保存');renderPlans();
+}
+
+function pSaveWSummary(){
+  const personId=document.getElementById('ws_p').value;
+  if(!personId){alert('请选择人员');return;}
+  const items=[];
+  for(let i=0;i<6;i++){
+    const target=document.getElementById(`wsi_${i}_target`)?.value.trim();
+    if(target){
+      items.push({
+        target,
+        action:document.getElementById(`wsi_${i}_action`)?.value.trim()||'',
+        stage:document.getElementById(`wsi_${i}_stage`)?.value||'',
+        amount:parseFloat(document.getElementById(`wsi_${i}_amount`)?.value)||0,
+        next:document.getElementById(`wsi_${i}_next`)?.value.trim()||'',
+      });
+    }
+  }
+  if(!data.plans.weekly_summary) data.plans.weekly_summary=[];
+  data.plans.weekly_summary.push({
+    id:uid(),personId,
+    weekStart:document.getElementById('ws_week').value,
+    weekTotal:parseFloat(document.getElementById('ws_total').value)||0,
+    problems:document.getElementById('ws_problems').value.trim(),
+    items,
+  });
+  logAction('提交周总结','');
+  saveData();closeModal();toast('周总结已保存');renderPlans();
+}
+
+function pSaveMSummary(){
+  const personId=document.getElementById('ms_p').value;
+  if(!personId){alert('请选择人员');return;}
+  if(!data.plans.monthly_summary) data.plans.monthly_summary=[];
+  data.plans.monthly_summary.push({
+    id:uid(),personId,
+    month:parseInt(document.getElementById('ms_month').value),
+    perfGoal:parseFloat(document.getElementById('ms_goal').value)||0,
+    perfActual:parseFloat(document.getElementById('ms_actual').value)||0,
+    newTargets:parseInt(document.getElementById('ms_new').value)||0,
+    visits:parseInt(document.getElementById('ms_visits').value)||0,
+    highlight:document.getElementById('ms_highlight').value.trim(),
+    weakness:document.getElementById('ms_weakness').value.trim(),
+    nextGoal:parseFloat(document.getElementById('ms_nextGoal').value)||0,
+    gridRisk:document.getElementById('ms_grid').value,
+    actionPlan:document.getElementById('ms_action').value.trim(),
+  });
+  logAction('提交月总结','');
+  saveData();closeModal();toast('月总结已保存');renderPlans();
+}
+
+function pEdit(type,id){
+  const plan=data.plans[type].find(x=>x.id===id);
+  if(!plan) return;
+  // For now, just show details in a modal
+  const p=data.personnel.find(x=>x.id===plan.personId);
+  document.getElementById('modalTitle').textContent=`${type==='weekly'?'周':'月'}计划详情`;
+  let detail='';
+  if(type==='weekly'&&plan.items){
+    detail=`<table><tr><th>目标</th><th>类型</th><th>阶段</th><th>行动</th><th>预期</th><th>备注</th></tr>
+    ${plan.items.map(i=>`<tr><td>${i.target||''}</td><td>${i.type||''}</td><td>${i.stage||''}</td><td>${i.action||''}</td><td>${i.result||''}</td><td>${i.note||''}</td></tr>`).join('')}</table>
+    <div style="margin-top:8px;font-size:12px">完成: ${plan.items.filter(i=>i.done).length}/${plan.items.length}</div>`;
+  } else if(plan.items){
+    detail=`<div style="font-size:12px">重点目标: ${plan.items.join('、')}</div>`;
+    if(plan.goal) detail+=`<div style="font-size:12px;margin-top:4px">业绩目标: ¥${plan.goal} · 新增: ${plan.newTargets} · 拜访: ${plan.visits}</div>`;
+  }
+  document.getElementById('modalBody').innerHTML=`
+    <div style="font-size:13px;font-weight:600;color:var(--primary);margin-bottom:8px">${p?p.name:'—'} · ${plan.title||''}</div>
+    ${detail}`;
+  document.getElementById('modalFooter').innerHTML=`<button class="btn btn-danger btn-sm" onclick="pDelete('${type}','${id}')">🗑删除</button><button class="btn btn-outline" onclick="closeModal()">关闭</button>`;
+  openModal();
+}
+
+function pDelete(type,id){
+  if(confirm('确认删除？')){data.plans[type]=data.plans[type].filter(x=>x.id!==id);saveData();closeModal();renderPlans();}
+}
+
+function pToggle(type,id,idx){
+  const plan=data.plans[type].find(x=>x.id===id);
+  if(plan&&plan.items[idx]){plan.items[idx].done=!plan.items[idx].done;saveData();renderPlans();}
+}
+
+function genDailyReport(){
+  const pid=myPersonId();
+  const p=data.personnel.find(x=>x.id===pid);
+  const today=TODAY();
+  document.getElementById('modalTitle').textContent='📱 填写日跟进汇报';
+  // Use all targets for admin, or filtered for salesperson
+  const allTgts=isAdmin()?data.targets:data.targets.filter(t=>t.assignee===pid);
+  const tgtOpts=allTgts.map(t=>`<option value="${t.id}">${t.name}（${t.type||'医院'}）</option>`).join('');
+  // Person selector for admin
+  const personOpts=isAdmin()?`<select id="dr_person" style="font-size:11px;padding:4px 8px">${
+    data.personnel.filter(x=>x.group!=='—').map(x=>`<option value="${x.id}"${x.id===pid?' selected':''}>${x.name}（${showGroups(x)}）</option>`).join('')}</select>`
+    :`<strong>${p?p.name:'—'}</strong><input type="hidden" id="dr_person" value="${pid||''}">`;
+  // Row builder
+  let rows='';
+  for(let i=1;i<=3;i++){
+    rows+=`<div style="display:grid;grid-template-columns:2fr 1fr 0.8fr 2.2fr;gap:4px;margin-bottom:4px">
+      <select id="dr_tgt_${i}" style="font-size:10px;padding:3px 5px"><option value="">▼目标${i}</option>${tgtOpts}</select>
+      <select id="dr_from_${i}" style="font-size:10px;padding:3px 5px"><option value="">从</option><option>①</option><option>②</option><option>③</option></select>
+      <select id="dr_to_${i}" style="font-size:10px;padding:3px 5px"><option value="">到</option><option>①</option><option>②</option><option>③</option><option>④</option></select>
+      <input id="dr_res_${i}" placeholder="结果简述" style="font-size:10px;padding:3px 5px">
+    </div>`;
+  }
+  document.getElementById('modalBody').innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <div style="font-size:12px;font-weight:600;color:var(--primary)">${personOpts} · ${today}</div>
+      <span style="font-size:10px;color:var(--text2)">${allTgts.length}个可用目标</span>
+      <button class="btn btn-sm btn-outline" style="font-size:10px;padding:2px 8px" onclick="quickAddTarget(event)">+添加目标</button>
+    </div>
+    <div id="quickAddTargetBox" style="display:none;margin-bottom:6px;padding:6px 8px;background:#fff8e1;border:1px solid #ffe082;border-radius:4px">
+      <div style="display:flex;gap:4px;align-items:center">
+        <input id="qat_name" placeholder="目标名称（医院/科室/专家）" style="flex:1;font-size:10px;padding:3px 5px;border:1px solid var(--border);border-radius:3px">
+        <select id="qat_type" style="font-size:10px;padding:3px 5px"><option>医院</option><option>科室</option><option>专家</option><option>诊所</option><option>卫生院</option></select>
+        <button class="btn btn-sm btn-primary" style="font-size:10px;padding:3px 8px" onclick="doQuickAddTarget()">添加</button>
+        <button class="btn btn-sm btn-outline" style="font-size:10px;padding:3px 8px" onclick="cancelQuickAdd()">✕</button>
+      </div>
+    </div>
+    <div class="form-group"><label>📋 已拜访目标（第一行可下拉选已有目标，其余手动输入）</label>${rows}
+    <div style="font-size:10px;color:var(--text2);margin-top:2px">💡 如果目标不在下拉菜单里，直接在目标2/3输入框手打名称即可</div></div>
+
+    <div class="form-group"><label>🆕 新增目标（填完自动创建）</label>
+    <div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:4px">
+      <input id="dr_new_name" placeholder="目标名称（医院/科室/专家）" style="font-size:10px;padding:3px 5px">
+      <input id="dr_new_source" placeholder="信息来源" style="font-size:10px;padding:3px 5px">
+      <select id="dr_new_type" style="font-size:10px;padding:3px 5px"><option>医院</option><option>科室</option><option>专家</option><option>诊所</option><option>卫生院</option></select>
+    </div></div>
+
+    <div class="form-group"><label>▶️ 明日计划</label>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1.5fr;gap:4px">
+      <input id="dr_am" placeholder="上午" style="font-size:10px;padding:3px 5px">
+      <input id="dr_pm" placeholder="下午" style="font-size:10px;padding:3px 5px">
+      <input id="dr_key" placeholder="重点目标" style="font-size:10px;padding:3px 5px">
+    </div></div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px">
+      <div><label style="font-size:11px">💡 今日心得</label>
+      <textarea id="dr_note" placeholder="经验或问题" style="width:100%;font-size:10px;padding:4px 6px;min-height:36px"></textarea></div>
+      <div><label style="font-size:11px">⚠️ 需支持</label>
+      <textarea id="dr_help" placeholder="资源需求" style="width:100%;font-size:10px;padding:4px 6px;min-height:36px"></textarea></div>
+    </div>
+
+    <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
+      <button class="btn btn-sm btn-primary" onclick="genReportOutput()">📄 生成汇报文本</button>
+      <button class="btn btn-sm btn-success" onclick="saveDailyReport()">💾 保存拜访记录</button>
+    </div>
+    <div id="dr_output" style="margin-top:8px;display:none">
+      <textarea id="dr_final" style="width:100%;height:160px;font-size:11px;padding:8px;border:1px solid var(--border);border-radius:4px;font-family:monospace" readonly></textarea>
+      <div style="margin-top:4px;text-align:right">
+        <button class="btn btn-sm btn-accent" onclick="copyDailyReport()">📋 复制发群</button>
+      </div>
+    </div>`;
+  document.getElementById('modalFooter').innerHTML='<button class="btn btn-outline" onclick="closeModal()">关闭</button>';
+  openModal();
+}function genReportOutput(){
+  const selP=document.getElementById('dr_person')?.value;const pid=selP||myPersonId();const p=data.personnel.find(x=>x.id===pid);
+  const today=TODAY();
+  let visitText='';
+  for(let i=1;i<=3;i++){
+    const tgt=document.getElementById(`dr_tgt_${i}`)?.value;
+    const from=document.getElementById(`dr_from_${i}`)?.value;
+    const to=document.getElementById(`dr_to_${i}`)?.value;
+    const res=document.getElementById(`dr_res_${i}`)?.value.trim();
+    if(tgt){
+      const tn=data.targets.find(t=>t.id===tgt)?.name||'—';
+      visitText+=`${i}️⃣ ${tn}  阶段：${from||'?'}→${to||'?'}  结果：${res||'—'}\\n`;
+    }
+  }
+  const newName=document.getElementById('dr_new_name')?.value.trim();
+  const newSrc=document.getElementById('dr_new_source')?.value.trim();
+  const am=document.getElementById('dr_am')?.value.trim();
+  const pm=document.getElementById('dr_pm')?.value.trim();
+  const key=document.getElementById('dr_key')?.value.trim();
+  const note=document.getElementById('dr_note')?.value.trim();
+  const help=document.getElementById('dr_help')?.value.trim();
+
+  if(!visitText&&!newName){alert('请至少填一个已拜访目标');return;}
+
+  let report=`【日跟进汇报 · ${p?p.name:'—'} · ${today}】\n\n📅 今日拜访（${today}）\n\n━━━ 已拜访目标 ━━━\n${visitText||'（今日暂未拜访）\n'}`;
+  if(newName) report+=`\n━━━ 新增目标 ━━━\n${newName}（新）${newSrc?' 来源：'+newSrc:''}  阶段：①\n`;
+  report+=`\n━━━ 明日计划 ━━━\n▶ 上午：${am||'______'}\n▶ 下午：${pm||'______'}\n▶ 重点：${key||'______'}\n`;
+  if(note) report+=`\n💡 今日心得：${note}\n`;
+  if(help) report+=`\n⚠️ 需支持：${help}\n`;
+
+  document.getElementById('dr_output').style.display='block';
+  document.getElementById('dr_final').value=report;
+}
+
+function saveDailyReport(){
+  const selPerson=document.getElementById('dr_person')?.value;
+  const pid=selPerson||myPersonId();
+  if(!pid){toast('请先选择人员');return;}
+  const p=data.personnel.find(x=>x.id===pid);
+  if(!p){toast('人员不存在');return;}
+  const today=TODAY();
+  let count=0; let newTargets=0;
+  for(let i=1;i<=3;i++){
+    let tgt=document.getElementById(`dr_tgt_${i}`)?.value;
+    const to=document.getElementById(`dr_to_${i}`)?.value;
+    const res=document.getElementById(`dr_res_${i}`)?.value.trim();
+    if(!tgt||!to) continue;
+    // If it's not a valid target ID, create a new target
+    const existingTarget=data.targets.find(t=>t.id===tgt);
+    let targetId=tgt;
+    if(!existingTarget && tgt.length>1){
+      // Create new target from typed name
+      const nt={id:uid(),name:tgt,type:'医院/科室',stage:1,assignee:pid,dept:'',location:'',note:'日汇报手动录入',createdAt:today,updatedAt:today,visitCount:0};
+      data.targets.push(nt);
+      targetId=nt.id;
+      newTargets++;
+    } else if(!existingTarget) continue;
+    // Create visit record
+    data.visits.push({id:uid(),date:today,personId:pid,targetId:targetId,stage:parseInt(to.replace(/[^1-4]/g,''))||1,nextDate:'',note:res||'日汇报填写'});
+    // Update target stage
+    const t=data.targets.find(x=>x.id===targetId);
+    if(t){const ns=parseInt(to.replace(/[^1-4]/g,''))||1;if(ns>t.stage)t.stage=ns;t.updatedAt=today;t.visitCount=(t.visitCount||0)+1;}
+    count++;
+  }
+  // New target from dedicated field
+  const newName=document.getElementById('dr_new_name')?.value.trim();
+  if(newName){
+    data.targets.push({id:uid(),name:newName,type:document.getElementById('dr_new_type')?.value||'医院',stage:1,assignee:pid,dept:'',location:'',note:'来源：'+(document.getElementById('dr_new_source')?.value.trim()||'日汇报'),createdAt:today,updatedAt:today,visitCount:0});
+    newTargets++;
+  }
+  if(count>0||newTargets>0){
+    logAction('日汇报提交',`${p.name} ${count}条拜访+${newTargets>0?newTargets+'个新增':''}`);
+    saveData();
+    toast(`✅ ${p.name}：${count}条拜访${newTargets>0?' + '+newTargets+'个新目标':''}已保存`);
+    closeModal();
+  }else{
+    alert('请至少填一个目标（选目标或手打名称）并选择阶段变化（"到"那一列）');
+  }
+}
+// ===== 快速添加目标（日汇报内使用）=====
+function quickAddTarget(e){e.preventDefault();document.getElementById('quickAddTargetBox').style.display='block';document.getElementById('qat_name').focus();}
+function cancelQuickAdd(){document.getElementById('quickAddTargetBox').style.display='none';document.getElementById('qat_name').value='';}
+function doQuickAddTarget(){
+  const name=document.getElementById('qat_name').value.trim();
+  if(!name){alert('请填写目标名称');return;}
+  const selPerson=document.getElementById('dr_person')?.value;
+  const pid=selPerson||myPersonId();
+  const type=document.getElementById('qat_type')?.value||'医院';
+  const t={id:uid(),name,type,stage:1,assignee:pid,dept:'',location:'',note:'日汇报快速添加',createdAt:TODAY(),updatedAt:TODAY(),visitCount:0};
+  data.targets.push(t);
+  saveData();
+  // Refresh the target dropdown
+  const sel=document.getElementById('dr_tgt_1');
+  if(sel){const opt=document.createElement('option');opt.value=t.id;opt.textContent=name;sel.appendChild(opt);sel.value=t.id;}
+  cancelQuickAdd();
+  toast(`✅ 已添加目标：${name}`);
+}
+
+function copyDailyReport(){
+  const ta=document.getElementById('dr_final');
+  if(ta){ta.select();document.execCommand('copy');toast('已复制到剪贴板');}
+}
+
+function renderDailyGuide(){
+  const hasTargets=data.targets.length>0;
+  return `<div style="font-size:12px;line-height:1.7;color:var(--text2)">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap">
+      <span style="font-size:14px;font-weight:600;color:var(--primary)">📱 日跟进汇报</span>
+      <button class="btn btn-sm btn-accent" onclick="genDailyReport()">✏️ 打开填写表单</button>
+      <a class="btn btn-sm btn-outline" onclick="showPage('visits')">📋 查看拜访记录</a>
+      ${!hasTargets?`<span style="font-size:11px;color:var(--accent)">⚠️ 暂无目标，请先在后台添加或直接在日汇报中手打名称</span>`:''}
+    </div>
+    <div style="background:#f8f9fc;padding:10px 14px;border-radius:6px;margin-bottom:8px;border-left:3px solid var(--accent)">
+      <strong>点击上方「✏️ 打开填写表单」按钮</strong>，在弹窗中填写：<br>
+      ① 目标1：下拉选已有目标 / 目标2-3：直接手打名称 → 选阶段变化 → 填结果<br>
+      ② 可选填新增目标、明日计划、心得<br>
+      ③ 点击「💾 保存拜访记录」→ 自动写入系统（可在 📋拜访记录 页查看编辑）<br>
+      ④ 点击「📄 生成汇报文本」→ 复制发微信群
+    </div>
+    <details style="font-size:11px;color:var(--text2)">
+      <summary style="cursor:pointer;font-weight:600">📖 查看群汇报格式参考（点击展开）</summary>
+      <div style="margin-top:6px;padding:8px 10px;background:#fff;border:1px solid var(--border);border-radius:4px;font-family:monospace;font-size:10px;line-height:1.5">
+【日跟进汇报 · 姓名 · 日期】<br><br>
+📅 今日拜访（日期）<br><br>
+━━━ 已拜访目标 ━━━<br>
+1️⃣ 目标：__________ 阶段：①→② 结果：已建立链接<br>
+2️⃣ 目标：__________ 阶段：②→③ 结果：已送材料<br>
+3️⃣ 目标：__________ 阶段：③→④ 结果：今日转诊1例<br><br>
+━━━ 明日计划 ━━━<br>
+▶ 上午：__________<br>
+▶ 下午：__________<br>
+▶ 重点：__________<br><br>
+💡 今日心得：<br>
+⚠️ 需支持：
+      </div>
+    </details>
+  </div>`;
+}
+
+
+// ============================================================
+// PERFORMANCE
+// ============================================================
+function renderPerformance(){
+  const pid=myPersonId();
+  let rows=[];
+  if(isAdmin()){
+    const pg={};
+    data.personnel.filter(p=>!p.groups||!p.groups.includes('—')).forEach(p=>{pg[p.id]={name:p.name,group:showGroups(p),gained:0,target:GOAL_MIN};});
+    data.performance.records.forEach(r=>{if([7,8].includes(r.month)&&pg[r.personId])pg[r.personId].gained+=r.amount||0;});
+    rows=Object.values(pg).sort((a,b)=>b.gained-a.gained);
+  } else if(pid){
+    const p=data.personnel.find(x=>x.id===pid);
+    if(p){let g=0;data.performance.records.forEach(r=>{if([7,8].includes(r.month)&&r.personId===pid)g+=r.amount||0;});rows=[{name:p.name,group:p.group,gained:g,target:GOAL_MIN}];}
+  }
+  const recs=myPerf().slice().sort((a,b)=>b.month-a.month);
+
+  document.getElementById('mainContent').innerHTML=`
+    <div class="page-header"><h2>📈 业绩追踪</h2><div class="actions"><button class="btn btn-sm btn-primary" onclick="perfForm()">+录入</button></div></div>
+    <div class="card"><div class="card-header"><h3>🏃 增量进度</h3></div><div class="card-body"><div class="table-wrap"><table><tr><th>姓名</th><th>组别</th><th>7-8月已增</th><th>目标</th><th>进度</th><th>剩余</th></tr>
+      ${rows.map(p=>{const pr=Math.min(100,(p.gained/p.target)*100);const rem=Math.max(0,p.target-p.gained);return `<tr><td><strong>${p.name}</strong></td><td><span class="tag tag-blue">${showGroups(p)}</span></td><td><strong>${fmt(p.gained)}</strong></td><td>${fmt(p.target)}</td><td><div class="progress-wrap"><div class="progress-bar"><div class="fill" style="width:${pr}%"></div></div><span class="progress-text">${pr.toFixed(0)}%</span></div></td><td style="color:${rem>0?'var(--accent)':'var(--success)'};font-weight:600">${rem>0?fmt(rem):'✅'}</td></tr>`;}).join('')}
+    </table></div></div></div>
+    <div class="card"><div class="card-header"><h3>📋 明细</h3></div><div class="card-body">${recs.length?`<div class="table-wrap"><table><tr><th>日期</th><th>人员</th><th>月份</th><th>金额</th><th>来源</th><th>备注</th><th>操作</th></tr>
+      ${recs.map(r=>{const p=data.personnel.find(x=>x.id===r.personId);return `<tr><td>${r.date||'-'}</td><td>${p?p.name:'—'}</td><td>${r.month}月</td><td><strong>${fmt(r.amount)}</strong></td><td><span class="tag tag-orange">${r.source||'—'}</span></td><td style="max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.note||'—'}</td><td><button class="btn btn-sm btn-danger" onclick="perfDel('${r.id}')">🗑</button></td></tr>`;}).join('')}</table></div>`:`<div class="empty-state"><div class="icon">📈</div><p>暂无</p></div>`}
+    </div></div>
+  `;
+}
+function perfForm(){
+  document.getElementById('modalTitle').textContent='录入业绩';
+  document.getElementById('modalBody').innerHTML=`
+    <div class="form-row"><div class="form-group"><label>人员</label><select id="pf_person"><option value="">—</option>${data.personnel.filter(p=>!p.groups||!p.groups.includes('—')).map(p=>`<option value="${p.id}"${p.id===myPersonId()?' selected':''}>${p.name}</option>`).join('')}</select></div>
+    <div class="form-group"><label>月份</label><select id="pf_month">${[7,8].map(m=>`<option value="${m}"${m===THIS_MONTH()?' selected':''}>${m}月</option>`).join('')}</select></div></div>
+    <div class="form-row"><div class="form-group"><label>金额 (元)</label><input id="pf_amount" type="number" step="0.01"></div>
+    <div class="form-group"><label>来源</label><select id="pf_source">${['转诊','门诊','住院','体检','义诊','其他'].map(o=>`<option value="${o}">${o}</option>`).join('')}</select></div></div>
+    <div class="form-row"><div class="form-group"><label>日期</label><input id="pf_date" type="date" value="${TODAY()}"></div></div>
+    <div class="form-group"><label>备注</label><textarea id="pf_note"></textarea></div>
+  `;
+  document.getElementById('modalFooter').innerHTML=`<button class="btn btn-outline" onclick="closeModal()">取消</button><button class="btn btn-primary" onclick="perfSave()">保存</button>`;
+  openModal();
+}
+function perfSave(){
+  const personId=document.getElementById('pf_person').value;const month=parseInt(document.getElementById('pf_month').value);const amount=parseFloat(document.getElementById('pf_amount').value)||0;const source=document.getElementById('pf_source').value;const note=document.getElementById('pf_note').value.trim();const date=document.getElementById('pf_date').value;
+  if(!personId||!amount){alert('请选择人员和填写金额');return;}
+  data.performance.records.push({id:uid(),personId,month,amount,source,date,note});
+  const p=data.personnel.find(x=>x.id===personId);
+  logAction('录入业绩',`${p?p.name:'—'} ${month}月 ${fmt(amount)}`);
+  saveData();closeModal();toast('已录入');renderPerformance();
+}
+function perfDel(id){if(confirm('确认删除？')){data.performance.records=data.performance.records.filter(r=>r.id!==id);saveData();toast('已删除');renderPerformance();}}
+
+// ============================================================
+// ============================================================
+// DATA BOARD 数据看板
+// ============================================================
+function renderDataBoard(){if(!isAdmin()){document.getElementById('mainContent').innerHTML='<div class="empty-state"><div class="icon">🔒</div><p>仅管理员可查看</p></div>';return;}
+const tm=THIS_MONTH();const mm={};for(let m=1;m<=tm;m++)mm[m]=0;data.performance.records.forEach(r=>{if(r.month&&mm[r.month]!==undefined)mm[r.month]+=r.amount||0;});
+const ty=Object.values(mm).reduce((s,v)=>s+v,0);const tmv=mm[tm]||0;const lmv=mm[tm-1]||0;const mp=lmv>0?(tmv-lmv)/lmv*100:0;const am=tm>0?Math.round(ty/tm):0;
+const pm={};data.personnel.filter(p=>!p.groups||!p.groups.includes('—')).forEach(p=>{pm[p.id]={name:p.name,group:showGroups(p),total:0,thisMonth:0};});
+data.performance.records.forEach(r=>{if(pm[r.personId]){pm[r.personId].total+=r.amount||0;if(r.month===tm)pm[r.personId].thisMonth+=r.amount||0;}});
+const ps=Object.values(pm).sort((a,b)=>b.thisMonth-a.thisMonth);const mxp=Math.max(...ps.map(p=>p.thisMonth),1);
+const vm={};for(let m=1;m<=tm;m++)vm[m]=0;data.visits.forEach(v=>{if(v.date){const m=parseInt(v.date.slice(5,7));if(vm[m]!==undefined)vm[m]++;}});
+function sb(d,h,c){const e=Object.entries(d);const mx=Math.max(...Object.values(d),1);const w=Math.max(35,Math.min(55,560/e.length));const tw=e.length*(w+4)+8;
+let b='';e.forEach(([k,v]) => {const bh=Math.max(2,(v/mx)*(h-30));b+=`<rect x="${8+(w+4)*(parseInt(k)-1)}" y="${h-20-bh}" width="${w-2}" height="${bh}" fill="${c}" rx="3"><title>${k}月: ¥${v.toLocaleString()}</title></rect>`;if(v>0)b+=`<text x="${8+(w+4)*(parseInt(k)-1)+(w-2)/2}" y="${h-24-bh}" text-anchor="middle" font-size="8.5" fill="#333">${(v/10000).toFixed(1)}w</text>`;b+=`<text x="${8+(w+4)*(parseInt(k)-1)+(w-2)/2}" y="${h-4}" text-anchor="middle" font-size="8.5" fill="#666">${k}月</text>`;});return `<svg width="${tw}" height="${h}" style="display:block;margin:0 auto">${b}</svg>`;}
+function sp(l,mx,h){const tw=Math.max(400,l.length*85);const bw=45;const cs=['#101843','#2c6b9e','#5a8db0','#8fb8d0','#b0c4de','#d0d8e8','#e8ecf4'];let b='';l.forEach((p,i)=>{const v=p.thisMonth||0;const bh=Math.max(2,(v/mx)*(h-30));const x=15+i*80;b+=`<rect x="${x}" y="${h-20-bh}" width="${bw}" height="${bh}" fill="${cs[i%cs.length]}" rx="3"><title>${p.name}: ¥${v.toLocaleString()}</title></rect>`;if(v>0)b+=`<text x="${x+bw/2}" y="${h-24-bh}" text-anchor="middle" font-size="8" fill="#333">${(v/10000).toFixed(1)}w</text>`;b+=`<text x="${x+bw/2}" y="${h-4}" text-anchor="middle" font-size="8" fill="#444">${p.name}</text>`;});return `<svg width="${tw}" height="${h}" style="display:block;margin:0 auto">${b}</svg>`;}
+const tg=data.personnel.filter(p=>!p.groups||!p.groups.includes('—')).length;
+document.getElementById('mainContent').innerHTML=`
+<div class="page-header"><h2>📉 数据看板</h2><span class="sub">${data.config.title} · 自动汇总</span></div>
+<div class="stats-row">
+<div class="stat-card highlight"><div class="label">${tm}月业绩</div><div class="value">${fmt(tmv)}</div><div class="sub">${mp>=0?'↑':'↓'}环比${Math.abs(mp).toFixed(1)}%</div></div>
+<div class="stat-card"><div class="label">年度累计</div><div class="value">${fmt(ty)}</div><div class="sub">月均 ${fmt(am)}</div></div>
+<div class="stat-card"><div class="label">本月目标</div><div class="value">${fmt(GOAL_MIN*tg)}</div><div class="sub">完成${(tmv/(GOAL_MIN*tg||1)*100).toFixed(1)}%</div></div>
+<div class="stat-card"><div class="label">${tm}月拜访</div><div class="value">${vm[tm]||0}</div><div class="sub">累计${data.visits.length}次</div></div>
+</div>
+<div class="card"><div class="card-header"><h3>📈 月度业绩趋势（万元）</h3></div><div class="card-body" style="overflow-x:auto">${sb(mm,200,'#101843')}</div></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+<div class="card"><div class="card-header"><h3>🏆 个人本月业绩排行</h3></div><div class="card-body" style="overflow-x:auto">${sp(ps,mxp,180)}</div></div>
+<div class="card"><div class="card-header"><h3>📋 月度拜访趋势</h3></div><div class="card-body" style="overflow-x:auto">${sb(vm,180,'#FF6B35')}</div></div>
+</div>
+<div class="card"><div class="card-header"><h3>📊 月度环比分析</h3></div><div class="card-body"><div class="table-wrap"><table><tr><th>月份</th><th>业绩</th><th>拜访</th><th>环比业绩</th><th>环比拜访</th><th>趋势</th></tr>${
+Array.from({length:tm},(_,i)=>{const m=i+1;const pn=mm[m]||0;const vn=vm[m]||0;const pp=mm[m-1]||0;const pv=vm[m-1]||0;const pc=pp>0?(pn-pp)/pp*100:0;const vc=pv>0?(vn-pv)/pv*100:0;return `<tr><td><strong>${m}月</strong></td><td>${fmt(pn)}</td><td>${vn}</td><td style="color:${pc>=0?'var(--success)':'var(--danger)'}">${pc>=0?'↑':'↓'}${Math.abs(pc).toFixed(1)}%</td><td style="color:${vc>=0?'var(--success)':'var(--danger)'}">${vc>=0?'↑':'↓'}${Math.abs(vc).toFixed(1)}%</td><td>${pn>pp?'📈':pn<pp?'📉':'➡️'}</td></tr>`;}).join('')}
+</table></div></div></div>
+<div class="card"><div class="card-header"><h3>📋 个人年度业绩汇总</h3></div><div class="card-body"><div class="table-wrap"><table><tr><th>姓名</th><th>组别</th>${Array.from({length:tm},(_,i)=>`<th>${i+1}月</th>`).join('')}<th>合计</th><th>占比</th></tr>${
+ps.map(p=>{const pm2={};data.performance.records.forEach(r=>{if(r.personId===p.id&&r.month)pm2[r.month]=(pm2[r.month]||0)+(r.amount||0);});let tot=0;const cl=Array.from({length:tm},(_,i)=>{const v=pm2[i+1]||0;tot+=v;return `<td>${v?'¥'+(v/10000).toFixed(1)+'w':'—'}</td>`;}).join('');return `<tr><td><strong>${p.name}</strong></td><td><span class="tag tag-blue">${showGroups(p)}</span></td>${cl}<td><strong>${fmt(tot)}</strong></td><td>${ty>0?(tot/ty*100).toFixed(1)+'%':'—'}</td></tr>`;}).join('')}
+</table></div></div></div>
+
+
+<!-- 考核评分卡 -->
+<div class="card"><div class="card-header"><h3>📊 考核评分（业绩50%+拜访30%+过程20%）</h3><span class="badge">⚡电网监控</span></div><div class="card-body"><div class="table-wrap"><table>
+<tr><th>姓名</th><th>分组</th><th>岗位</th><th>本月业绩</th><th>业绩(50%)</th><th>拜访(30%)</th><th>过程(20%)</th><th>总分</th><th>⚡电网</th><th>风险等级</th></tr>${
+ps.map(p=>{const perf=p.thisMonth||0;const pos=getPos(p);const goal=getBase(p);const sprint=getSprint(p);const perfScore=perf>=goal?100:Math.min(100,(perf/goal)*100);const myV=data.visits.filter(v=>v.personId===p.id&&v.date&&v.date.startsWith('2026-0'+tm)).length;const std=12;const visitScore=Math.min(100,(myV/std)*100);const total=perfScore*0.5+visitScore*0.3+20;let grid='🟢',risk='正常';let gridNote='';if(perf<goal*0.4||myV<std*0.5){grid='🟡';risk='黄牌预警';gridNote='业绩<40%或拜访<50%';}if(perf===0||myV<std*0.4){grid='🔴';risk='红牌预警';gridNote='业绩=0或拜访<40%';}if(perf<goal*0.3){grid='🔴';risk='直接红牌';gridNote='业绩<目标30%（冲刺期）';}return `<tr><td><strong>${p.name}</strong></td><td><span class="tag tag-blue">${showGroups(p)}</span></td><td><span class="tag tag-cyan">${pos}</span></td>
+<td><strong>${fmt(perf)}</strong><br><span style="font-size:9px;color:var(--text2)">目标${fmt(goal)}</span></td>
+<td>${perfScore.toFixed(1)}分</td><td>${visitScore.toFixed(1)}分</td><td>20分</td>
+<td><strong>${total.toFixed(1)}分</strong></td><td style="font-size:18px">${grid}</td>
+<td><span class="tag ${risk==='正常'?'tag-green':risk.includes('黄牌')?'tag-orange':'tag-red'}">${risk}</span>
+${gridNote?`<br><span style="font-size:9px;color:var(--text2)">${gridNote}</span>`:''}</td></tr>`;}).join('')}
+</table></div>
+<div style="margin-top:8px;font-size:11px;color:var(--text2);background:#f8f9fc;padding:8px 12px;border-radius:4px;line-height:1.6">
+<strong>考核规则：</strong>
+业绩得分=实际/岗位目标×100（满分100）· 拜访得分=实际/标准12次×100（满分100）· 过程得分20（提交计划即得）<br>
+<strong>岗位目标：</strong>${POSITION_KEYS.map(k=>`${k} ${fmt(POSITION_TIERS[k].base)}/${fmt(POSITION_TIERS[k].sprint)}`).join(' · ')}
+<span style="color:var(--accent);margin-left:12px">⚡电网：</span>
+🟢正常 · 🟡业绩&lt;40%或拜访&lt;50%→黄牌 · 🔴业绩=0或拜访&lt;40%→红牌 · 🔴业绩&lt;30%→直接红牌（冲刺期）
+</div></div></div>
+
+<div class="card"><div class="card-header"><h3>📤 导入导出</h3></div><div class="card-body">
+<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">
+<button class="btn btn-primary btn-sm" onclick="expPerf()">📤 导出本月业绩</button>
+<button class="btn btn-outline btn-sm" onclick="expPerfAll()">📤 导出全年业绩</button>
+<button class="btn btn-outline btn-sm" onclick="expVisits()">📤 导出拜访记录</button>
+<button class="btn btn-outline btn-sm" onclick="expTargets()">📤 导出目标清单</button>
+<button class="btn btn-accent btn-sm" onclick="expReport()">📑 导出完整月报</button>
+</div>
+<div style="font-size:12px;color:var(--text2);padding:6px 10px;background:#f8f9fc;border-radius:4px">
+<strong>📥 导入业绩</strong>：上传Excel（姓名|金额|月份）自动写入系统
+<input type="file" id="importFile" accept=".xlsx,.xls" style="display:none" onchange="doImport()">
+<button class="btn btn-sm btn-primary" style="margin-left:6px" onclick="document.getElementById('importFile').click()">选择文件</button>
+<span id="importStatus" style="margin-left:8px;font-size:11px;color:var(--success)"></span>
+</div>
+</div></div>`;}
+
+function expPerf(){location.href='/api/export/performance?month='+THIS_MONTH()}
+function expPerfAll(){location.href='/api/export/performance'}
+function expVisits(){location.href='/api/export/visits'}
+function expTargets(){location.href='/api/export/targets'}
+function expReport(){location.href='/api/export/monthly-report?month='+THIS_MONTH()}
+function doImport(){const f=document.getElementById('importFile');if(!f.files.length)return;const fd=new FormData();fd.append('file',f.files[0]);const st=document.getElementById('importStatus');st.textContent='上传中...';fetch('/api/import/performance',{method:'POST',body:fd}).then(r=>r.json()).then(d=>{st.textContent=d.message||'导入完成';if(d.errors&&d.errors.length)st.textContent+='，错误：'+d.errors.join(';');}).catch(e=>{st.textContent='导入失败：'+e.message;});}
+
+// ADMIN
+// ============================================================
+let adminTab='users';
+function renderAdmin(){
+  if(!isAdmin()){document.getElementById('mainContent').innerHTML=`<div class="empty-state"><div class="icon">🔒</div><p>仅管理员可访问</p></div>`;return;}
+  document.getElementById('mainContent').innerHTML=`
+    <div class="page-header"><h2>⚙️ 管理后台</h2><span class="sub">${data.config.title}</span></div>
+    <div class="admin-tabs">
+      <div class="admin-tab ${adminTab==='users'?'active':''}" onclick="switchAdmin('users')">👥 账号管理</div>
+      <div class="admin-tab ${adminTab==='personnel'?'active':''}" onclick="switchAdmin('personnel')">人员管理</div>
+      <div class="admin-tab ${adminTab==='groups'?'active':''}" onclick="switchAdmin('groups')">分组管理</div>
+      <div class="admin-tab ${adminTab==='data'?'active':''}" onclick="switchAdmin('data')">📊 全部数据</div>
+      <div class="admin-tab ${adminTab==='log'?'active':''}" onclick="switchAdmin('log')">📋 操作日志</div>
+      <div class="admin-tab ${adminTab==='settings'?'active':''}" onclick="switchAdmin('settings')">⚙️ 设置</div>
+    </div>
+    <div id="adminContent"></div>
+  `;
+  renderAdminTab();
+}
+function switchAdmin(tab){adminTab=tab;renderAdminTab();}
+function renderAdminTab(){
+  const content=document.getElementById('adminContent');
+  if(!content) return;
+  if(adminTab==='users')content.innerHTML=adminUsers();
+  else if(adminTab==='personnel')content.innerHTML=adminPersonnel();
+  else if(adminTab==='groups')content.innerHTML=adminGroups();
+  else if(adminTab==='data')content.innerHTML=adminData();
+  else if(adminTab==='log')content.innerHTML=adminLog();
+  else if(adminTab==='settings')content.innerHTML=adminSettings();
+}
+
+// ----- USERS -----
+function adminUsers(){
+  return `
+  <div class="card"><div class="card-header"><h3>👥 账号管理</h3><button class="btn btn-sm btn-primary" onclick="userForm()">+ 添加业务员账号</button></div><div class="card-body"><div class="table-wrap"><table>
+    <tr><th>账号名称</th><th>角色</th><th>关联业务员</th><th>所属分组</th><th>上次登录</th><th>操作</th></tr>
+    ${data.users.map(u=>{
+      const p=data.personnel.find(x=>x.id===u.personId);
+      return `<tr><td><strong>${u.name}</strong></td>
+        <td><span class="tag ${u.role==='admin'?'tag-red':'tag-cyan'}">${u.role==='admin'?'管理员':'业务员'}</span></td>
+        <td>${p?p.name:'—'}</td>
+        <td>${p?showGroups(p):'—'}</td>
+        <td>${u.lastLogin||'—'}</td>
+        <td>${u.role==='admin'?'—':`<button class="btn btn-sm btn-outline" onclick="userForm('${u.id}')">✏️</button><button class="btn btn-sm btn-danger" onclick="userDel('${u.id}')">🗑</button>`}</td>
+      </tr>`;
+    }).join('')}
+  </table></div>
+  <div style="margin-top:8px;font-size:11px;color:var(--text2);background:#fff8e1;padding:6px 10px;border-radius:4px">
+    💡 添加业务员账号后，业务员用"账号名称+密码"登录，只能看到自己关联人员的数据
+  </div></div></div>`;
+}
+
+function userForm(editId){
+  const u=editId?data.users.find(x=>x.id===editId):null;
+  document.getElementById('modalTitle').textContent=u?'编辑业务员账号':'添加业务员账号';
+  document.getElementById('modalBody').innerHTML=`
+    <div class="form-row"><div class="form-group"><label>账号名称 *</label><input id="uf_name" value="${u?u.name:''}" placeholder="如：liutianyu"></div>
+    <div class="form-group"><label>登录密码 *</label><input id="uf_pass" value="${u?u.pass:''}" placeholder="${u?'留空不修改':'设置密码'}"></div></div>
+    <div class="form-group"><label>关联业务员 *</label><select id="uf_person"><option value="">—</option>${data.personnel.filter(p=>!p.groups||!p.groups.includes('—')).map(p=>`<option value="${p.id}"${u&&u.personId===p.id?' selected':''}>${p.name}（${showGroups(p)}·${p.sites||''}）</option>`).join('')}</select></div>
+    <div style="font-size:10px;color:var(--text2);background:#f5f5f5;padding:6px 8px;border-radius:4px">⚠️ 关联后，该账号只能查看和编辑此业务员的数据</div>
+  `;
+  document.getElementById('modalFooter').innerHTML=`<button class="btn btn-outline" onclick="closeModal()">取消</button><button class="btn btn-primary" onclick="userSave('${editId||''}')">保存</button>`;
+  openModal();
+}
+function userSave(editId){
+  const name=document.getElementById('uf_name').value.trim();
+  const pass=document.getElementById('uf_pass').value.trim();
+  const personId=document.getElementById('uf_person').value;
+  if(!name||!personId){alert('请填写账号名称并选择关联人员');return;}
+  if(editId){
+    const u=data.users.find(x=>x.id===editId);
+    if(u){u.name=name;if(pass)u.pass=pass;u.personId=personId;}
+    logAction('编辑账号',name);
+  } else {
+    if(!pass){alert('请设置密码');return;}
+    if(data.users.find(x=>x.name===name)){alert('账号名已存在');return;}
+    data.users.push({id:uid(),name,role:'sales',pass,personId});
+    logAction('添加账号',name);
+  }
+  saveData();closeModal();toast('已保存');renderAdmin();
+}
+function userDel(id){
+  if(!confirm('确认删除该账号？业务员将无法登录')) return;
+  const u=data.users.find(x=>x.id===id);
+  data.users=data.users.filter(x=>x.id!==id);
+  logAction('删除账号',u?u.name:'');
+  saveData();toast('已删除');renderAdmin();
+}
+
+// ----- PERSONNEL (admin) -----
+function adminPersonnel(){
+  return `<div class="card"><div class="card-header"><h3>👥 人员管理</h3><button class="btn btn-sm btn-primary" onclick="apForm()">+ 添加人员</button></div><div class="card-body"><div class="table-wrap"><table>
+    <tr><th>姓名</th><th>分组</th><th>负责网点/医院</th><th>电话</th><th>备注</th><th>操作</th></tr>
+    ${data.personnel.map(p=>`<tr><td><strong>${p.name}</strong></td><td><span class="tag tag-blue">${showGroups(p)||'—'}</span></td><td>${p.sites||'—'}</td><td>${p.phone||'—'}</td><td style="max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.note||'—'}</td><td><button class="btn btn-sm btn-outline" onclick="apForm('${p.id}')">✏️</button><button class="btn btn-sm btn-danger" onclick="apDel('${p.id}')">🗑</button></td></tr>`).join('')}
+  </table></div></div></div>`;
+}
+function apForm(editId){
+  const p=editId?data.personnel.find(x=>x.id===editId):null;
+  document.getElementById('modalTitle').textContent=p?'编辑人员':'添加人员';
+  document.getElementById('modalBody').innerHTML=`
+    <div class="form-row"><div class="form-group"><label>姓名 *</label><input id="ap_name" value="${p?p.name:''}"></div>
+    <div class="form-group"><label>岗位</label><select id="ap_pos">${POSITION_KEYS.map(k=>`<option value="${k}"${p&&p.position===k?' selected':''}>${k}</option>`).join('')}</select></div>
+    <div class="form-group"><label>分组（可多选）</label><div style="border:1px solid var(--border);border-radius:5px;padding:6px 8px;background:#fff">${data.groups.map(g=>`<label style="display:inline-flex;align-items:center;gap:4px;margin:3px 6px 3px 0;font-size:12px;cursor:pointer"><input type="checkbox" value="${g.name}" ${p&&p.groups&&p.groups.includes(g.name)?'checked':''} onchange="apToggleGroup(this)">${g.name}</label>`).join('')}</div></div></div>
+    <div class="form-row"><div class="form-group"><label>负责网点</label><input id="ap_sites" value="${p?p.sites:''}"></div>
+    <div class="form-group"><label>电话</label><input id="ap_phone" value="${p?p.phone:''}"></div></div>
+    <div class="form-group"><label>备注</label><textarea id="ap_note">${p?p.note:''}</textarea></div>
+  `;
+  document.getElementById('modalFooter').innerHTML=`<button class="btn btn-outline" onclick="closeModal()">取消</button><button class="btn btn-primary" onclick="apSave('${editId||''}')">保存</button>`;
+  openModal();
+}
+function apToggleGroup(cb){
+  // no-op: groups are collected at save time
+}
+function apSave(editId){
+  const checkboxes=document.querySelectorAll('#modalBody input[type="checkbox"]:checked');
+  const selectedGroups=Array.from(checkboxes).map(cb=>cb.value).filter(v=>v);
+  const vals={name:document.getElementById('ap_name').value.trim(),groups:selectedGroups.length?selectedGroups:['—'],position:document.getElementById('ap_pos')?.value||'业务员',sites:document.getElementById('ap_sites').value.trim(),phone:document.getElementById('ap_phone').value.trim(),note:document.getElementById('ap_note').value.trim()};
+  if(!vals.name){alert('请填写姓名');return;}
+  if(editId){const p=data.personnel.find(x=>x.id===editId);if(p)Object.assign(p,vals);logAction('编辑人员',vals.name);}
+  else{data.personnel.push({id:uid(),...vals});logAction('添加人员',vals.name);}
+  saveData();closeModal();toast('已保存');renderAdmin();
+}
+function apDel(id){if(confirm('确认删除？')){const p=data.personnel.find(x=>x.id===id);data.personnel=data.personnel.filter(x=>x.id!==id);data.users=data.users.filter(u=>u.personId!==id);logAction('删除人员',p?p.name:'');saveData();toast('已删除');renderAdmin();}}
+
+// ----- GROUPS -----
+function adminGroups(){return `<div class="card"><div class="card-header"><h3>🏷️ 分组管理</h3><button class="btn btn-sm btn-primary" onclick="gForm()">+ 添加分组</button></div><div class="card-body"><div class="table-wrap"><table><tr><th>名称</th><th>颜色</th><th>成员</th><th>操作</th></tr>
+  ${data.groups.map((g,i)=>`<tr><td><strong>${g.name}</strong></td><td><span style="display:inline-block;width:18px;height:18px;border-radius:3px;background:${g.color};vertical-align:middle"></span></td><td>${data.personnel.filter(p=>p.groups&&p.groups.includes(g.name)).length}人</td><td><button class="btn btn-sm btn-outline" onclick="gForm(${i})">✏️</button><button class="btn btn-sm btn-danger" onclick="gDel(${i})">🗑</button></td></tr>`).join('')}
+</table></div></div></div>`;}
+function gForm(idx){const g=idx!==undefined?data.groups[idx]:null;document.getElementById('modalTitle').textContent=g?'编辑分组':'添加分组';document.getElementById('modalBody').innerHTML=`<div class="form-row"><div class="form-group"><label>名称</label><input id="gf_name" value="${g?g.name:''}"></div><div class="form-group"><label>颜色</label><input id="gf_color" type="color" value="${g?g.color:'#2c6b9e'}"></div></div>`;document.getElementById('modalFooter').innerHTML=`<button class="btn btn-outline" onclick="closeModal()">取消</button><button class="btn btn-primary" onclick="gSave(${idx!==undefined?idx:-1})">保存</button>`;openModal();}
+function gSave(idx){const name=document.getElementById('gf_name').value.trim();const color=document.getElementById('gf_color').value;if(!name){alert('请填写名称');return;}if(idx>=0)data.groups[idx]={name,color};else data.groups.push({name,color});logAction(idx>=0?'编辑分组':'添加分组',name);saveData();closeModal();toast('已保存');renderAdmin();}
+function gDel(idx){const g=data.groups[idx];if(!g)return;const cnt=data.personnel.filter(p=>p.group===g.name).length;if(cnt>0&&!confirm(`"${g.name}"下有${cnt}名成员，确认？`))return;data.personnel.forEach(p=>{if(p.groups&&p.groups.includes(g.name))p.groups=p.groups.filter(x=>x!==g.name);if(p.groups&&p.groups.length===0)p.groups=['—'];});data.groups.splice(idx,1);logAction('删除分组',g.name);saveData();toast('已删除');renderAdmin();}
+
+// ----- ALL DATA -----
+function adminData(){
+  return `
+  <div class="card"><div class="card-header"><h3>📊 全部数据总览</h3></div><div class="card-body" style="font-size:12px">
+    <div class="stats-row">
+      <div class="stat-card"><div class="label">👥 人员</div><div class="value">${data.personnel.length}</div></div>
+      <div class="stat-card"><div class="label">🎯 目标</div><div class="value">${data.targets.length}</div></div>
+      <div class="stat-card"><div class="label">📋 拜访</div><div class="value">${data.visits.length}</div></div>
+      <div class="stat-card"><div class="label">📈 业绩</div><div class="value">${data.performance.records.length}</div></div>
+      <div class="stat-card"><div class="label">👤 账号</div><div class="value">${data.users.length}</div></div>
+      <div class="stat-card"><div class="label">📋 日志</div><div class="value">${data.activityLog.length}</div></div>
+    </div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
+      <button class="btn btn-sm btn-outline" onclick="showByPerson()">👤 按人员查看所有数据</button>
+      <button class="btn btn-sm btn-danger" onclick="if(confirm('确认清空所有数据？此操作不可撤销！')){localStorage.removeItem(STORE_KEY);toast('已重置');location.reload();}">🔄 重置全部</button>
+    </div>
+  </div></div>`;
+}
+function showByPerson(){
+  let html='';
+  data.personnel.filter(p=>!p.groups||!p.groups.includes('—')).forEach(p=>{
+    const targets=data.targets.filter(t=>t.assignee===p.id).length;
+    const visits=data.visits.filter(v=>v.personId===p.id).length;
+    const perf=data.performance.records.filter(r=>r.personId===p.id).reduce((s,r)=>s+(r.amount||0),0);
+    const plans=data.plans.weekly.filter(w=>w.personId===p.id).length+data.plans.monthly.filter(w=>w.personId===p.id).length;
+    html+=`<div class="sales-card"><div class="avatar">${p.name[0]}</div><div class="info"><div class="name">${p.name}</div><div class="meta">${showGroups(p)} · ${p.sites||''}</div></div><div style="text-align:right;font-size:10px;color:var(--text2)">🎯${targets} 📋${visits} 📅${plans} 📈${fmt(perf)}</div></div>`;
+  });
+  document.getElementById('modalTitle').textContent='👤 按人员数据统计';
+  document.getElementById('modalBody').innerHTML=html||'<div class="empty-state small">无数据</div>';
+  document.getElementById('modalFooter').innerHTML='<button class="btn btn-outline" onclick="closeModal()">关闭</button>';
+  openModal();
+}
+
+// ----- LOG -----
+function adminLog(){
+  const logs=[...data.activityLog].sort((a,b)=>b.timestamp?.localeCompare(a.timestamp||'')||0);
+  return `<div class="card"><div class="card-header"><h3>📋 操作日志</h3><span class="badge">${logs.length}条</span></div><div class="card-body"><div class="table-wrap"><table><tr><th>时间</th><th>用户</th><th>角色</th><th>操作</th><th>详情</th></tr>
+    ${logs.length?logs.slice(0,100).map(l=>`<tr><td style="font-size:10px;white-space:nowrap">${l.timestamp?.slice(0,16)||'-'}</td><td>${l.userName||'—'}</td><td><span class="tag ${l.role==='admin'?'tag-red':'tag-cyan'}">${l.role||'—'}</span></td><td>${l.action||'—'}</td><td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l.detail||'—'}</td></tr>`).join(''):`<tr><td colspan="5"><div class="empty-state small">暂无日志</div></td></tr>`}
+  </table></div></div></div>`;
+}
+
+// ----- SETTINGS -----
+function adminSettings(){
+  return `<div class="card"><div class="card-header"><h3>⚙️ 系统设置</h3></div><div class="card-body">
+    <div class="form-row"><div class="form-group"><label>系统标题</label><input id="sf_title" value="${data.config.title}"></div>
+    <div class="form-group"><label>管理员密码</label><input id="sf_pass" value="${data.users.find(u=>u.role==='admin')?.pass||''}"></div></div>
+    <div class="form-row"><div class="form-group"><label>单人目标下限</label><input id="sf_min" type="number" value="${data.config.goalMin||GOAL_MIN}"></div>
+    <div class="form-group"><label>单人目标上限</label><input id="sf_max" type="number" value="${data.config.goalMax||GOAL_MAX}"></div></div>
+    <div class="form-group"><label>冲刺月份</label><input id="sf_months" value="${(data.config.goalMonths||[7,8]).join(',')}"></div>
+    <button class="btn btn-primary" onclick="setSave()">保存设置</button>
+  </div></div>`;
+}
+function setSave(){
+  data.config.title=document.getElementById('sf_title').value.trim();
+  const adminUser=data.users.find(u=>u.role==='admin');
+  const newPass=document.getElementById('sf_pass').value.trim();
+  if(newPass&&adminUser)adminUser.pass=newPass;
+  data.config.goalMin=parseInt(document.getElementById('sf_min').value)||GOAL_MIN;
+  data.config.goalMax=parseInt(document.getElementById('sf_max').value)||GOAL_MAX;
+  data.config.goalMonths=document.getElementById('sf_months').value.split(',').map(s=>parseInt(s.trim())).filter(n=>!isNaN(n));
+  saveData();logAction('设置','修改系统设置');toast('已保存');renderAdmin();
+}
+
+// ============================================================
+// MODAL
+// ============================================================
+function openModal(){document.getElementById('modalOverlay').classList.add('show');}
+function closeModal(){document.getElementById('modalOverlay').classList.remove('show');}
+document.getElementById('modalOverlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal();});
+
+// ============================================================
+// INIT
+// ============================================================
+// Default goal values (updated after data loads)
+let GOAL_MIN = 100000;
+let GOAL_MAX = 150000;
+
+// Async initialization
+(async function() {
+  await initData();
+  if (data && data.config) {
+    GOAL_MIN = data.config.goalMin || 100000;
+    GOAL_MAX = data.config.goalMax || 150000;
+  }
+  // Update login hint
+  document.querySelector('.role-hint').textContent = '数据已就绪 · 请输入账号密码';
+})();
+</script>
+</body>
+</html>

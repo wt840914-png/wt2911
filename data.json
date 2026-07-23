@@ -1,0 +1,776 @@
+{
+  "config": {
+    "title": "京顺医院 · 社服部",
+    "goalMin": 100000,
+    "goalMax": 150000,
+    "goalMonths": [
+      7,
+      8
+    ]
+  },
+  "users": [
+    {
+      "id": "u_admin",
+      "name": "admin",
+      "role": "admin",
+      "pass": "jingshun2026",
+      "personId": null
+    },
+    {
+      "id": "mrwtfou94g",
+      "name": "lty",
+      "role": "sales",
+      "pass": "123",
+      "personId": "p1"
+    },
+    {
+      "id": "mrwtsyw1r8",
+      "name": "zx",
+      "role": "sales",
+      "pass": "123",
+      "personId": "p6"
+    },
+    {
+      "id": "mrwttave3y",
+      "name": "dhw",
+      "role": "sales",
+      "pass": "123",
+      "personId": "p7"
+    },
+    {
+      "id": "mrwttns3f9",
+      "name": "llj",
+      "role": "sales",
+      "pass": "123",
+      "personId": "p2"
+    }
+  ],
+  "groups": [
+    {
+      "name": "区医院",
+      "color": "#2c6b9e"
+    },
+    {
+      "name": "友谊医院组",
+      "color": "#8e44ad"
+    },
+    {
+      "name": "公益义诊组",
+      "color": "#27ae60"
+    },
+    {
+      "name": "中医院（顺义）",
+      "color": "#e67e22"
+    },
+    {
+      "name": "妇幼医院（顺义）",
+      "color": "#2c6b9e"
+    },
+    {
+      "name": "机场医院",
+      "color": "#9f2d9b"
+    },
+    {
+      "name": "李遂（地坛医院）",
+      "color": "#2c6b9e"
+    },
+    {
+      "name": "杨镇二院",
+      "color": "#5b9f2d"
+    },
+    {
+      "name": "卫生院（河东）",
+      "color": "#9f2d44"
+    },
+    {
+      "name": "卫生院（河西）",
+      "color": "#4f2d9f"
+    },
+    {
+      "name": "城区卫生院（石园、胜利、光明、旺泉）",
+      "color": "#2c6b9e"
+    },
+    {
+      "name": "社区服务站点（卫生室）",
+      "color": "#8cf524"
+    },
+    {
+      "name": "空港医院（顺义）",
+      "color": "#2c6b9e"
+    },
+    {
+      "name": "急救120+999",
+      "color": "#9f492d"
+    },
+    {
+      "name": "养老院",
+      "color": "#0df2ee"
+    }
+  ],
+  "personnel": [
+    {
+      "id": "p1",
+      "name": "刘天宇",
+      "groups": [
+        "中医院（顺义）",
+        "卫生院（河东）"
+      ],
+      "sites": "",
+      "phone": "",
+      "note": "",
+      "position": "业务员"
+    },
+    {
+      "id": "p2",
+      "name": "李丽军",
+      "groups": [
+        "公益义诊组"
+      ],
+      "sites": "义诊组",
+      "phone": "",
+      "note": "",
+      "position": "义诊公益"
+    },
+    {
+      "id": "p3",
+      "name": "杜学佳",
+      "groups": [
+        "急救120+999",
+        "养老院"
+      ],
+      "sites": "老业务",
+      "phone": "",
+      "note": "",
+      "position": "老业务员"
+    },
+    {
+      "id": "p4",
+      "name": "郭素针",
+      "groups": [
+        "友谊医院组",
+        "机场医院",
+        "李遂（地坛医院）"
+      ],
+      "sites": "老业务",
+      "phone": "",
+      "note": ""
+    },
+    {
+      "id": "p5",
+      "name": "陈志刚",
+      "groups": [
+        "急救120+999",
+        "养老院"
+      ],
+      "sites": "老业务",
+      "phone": "",
+      "note": ""
+    },
+    {
+      "id": "p6",
+      "name": "张响",
+      "groups": [
+        "友谊医院组"
+      ],
+      "sites": "新业务",
+      "phone": "",
+      "note": "",
+      "position": "业务员"
+    },
+    {
+      "id": "p7",
+      "name": "董文浩",
+      "groups": [
+        "区医院",
+        "卫生院（河西）"
+      ],
+      "sites": "",
+      "phone": "",
+      "note": "",
+      "position": "见习业务员"
+    }
+  ],
+  "targets": [
+    {
+      "id": "mrww4b244j",
+      "name": "友谊康复科（吴主任）",
+      "type": "医院/科室",
+      "stage": 1,
+      "assignee": "p6",
+      "dept": "",
+      "location": "",
+      "note": "日汇报手动录入",
+      "createdAt": "2026-07-23",
+      "updatedAt": "2026-07-23",
+      "visitCount": 1
+    },
+    {
+      "id": "mrww4b248l",
+      "name": "急诊外科（刘主任）",
+      "type": "医院/科室",
+      "stage": 1,
+      "assignee": "p6",
+      "dept": "",
+      "location": "",
+      "note": "日汇报手动录入",
+      "createdAt": "2026-07-23",
+      "updatedAt": "2026-07-23",
+      "visitCount": 1
+    },
+    {
+      "id": "mrww4b24y2",
+      "name": "空港医院、外科、李医生",
+      "type": "医院",
+      "stage": 1,
+      "assignee": "p6",
+      "dept": "",
+      "location": "",
+      "note": "来源：朋友介绍",
+      "createdAt": "2026-07-23",
+      "updatedAt": "2026-07-23",
+      "visitCount": 0
+    }
+  ],
+  "visits": [
+    {
+      "id": "mrww4b2484",
+      "date": "2026-07-23",
+      "personId": "p6",
+      "targetId": "mrww4b244j",
+      "stage": 1,
+      "nextDate": "2026-07-23",
+      "note": "安排我院人员学习交流"
+    },
+    {
+      "id": "mrww4b24w7",
+      "date": "2026-07-23",
+      "personId": "p6",
+      "targetId": "mrww4b248l",
+      "stage": 1,
+      "nextDate": "",
+      "note": "拜访及碎石转诊报酬说明"
+    }
+  ],
+  "plans": {
+    "weekly": [],
+    "monthly": []
+  },
+  "performance": {
+    "records": []
+  },
+  "activityLog": [
+    {
+      "id": "mrwqq8p95u",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "登录",
+      "detail": "登录系统",
+      "timestamp": "2026-07-22T23:55:45.165Z"
+    },
+    {
+      "id": "mrwqxo94e1",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "登录",
+      "detail": "登录系统",
+      "timestamp": "2026-07-23T00:01:31.912Z"
+    },
+    {
+      "id": "mrwqyumh8m",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "登录",
+      "detail": "登录系统",
+      "timestamp": "2026-07-23T00:02:26.825Z"
+    },
+    {
+      "id": "mrwsxbn6o6",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "登录",
+      "detail": "登录系统",
+      "timestamp": "2026-07-23T00:57:14.802Z"
+    },
+    {
+      "id": "mrwsy6b95l",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "登录",
+      "detail": "登录系统",
+      "timestamp": "2026-07-23T00:57:54.549Z"
+    },
+    {
+      "id": "mrwt1xki5k",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "登录",
+      "detail": "登录系统",
+      "timestamp": "2026-07-23T01:00:49.842Z"
+    },
+    {
+      "id": "mrwt528qic",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "登录",
+      "detail": "登录系统",
+      "timestamp": "2026-07-23T01:03:15.866Z"
+    },
+    {
+      "id": "mrwt7h3olm",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "登录",
+      "detail": "登录系统",
+      "timestamp": "2026-07-23T01:05:08.436Z"
+    },
+    {
+      "id": "mrwtc7245s",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "登录",
+      "detail": "登录系统",
+      "timestamp": "2026-07-23T01:08:48.700Z"
+    },
+    {
+      "id": "mrwtfou9if",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "添加账号",
+      "detail": "lty",
+      "timestamp": "2026-07-23T01:11:31.713Z"
+    },
+    {
+      "id": "mrwtgq4y7u",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "编辑人员",
+      "detail": "董文浩",
+      "timestamp": "2026-07-23T01:12:20.050Z"
+    },
+    {
+      "id": "mrwth0wqfa",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "编辑人员",
+      "detail": "董文浩",
+      "timestamp": "2026-07-23T01:12:34.010Z"
+    },
+    {
+      "id": "mrwthgi9im",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "编辑分组",
+      "detail": "区医院",
+      "timestamp": "2026-07-23T01:12:54.225Z"
+    },
+    {
+      "id": "mrwthvihiy",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "编辑分组",
+      "detail": "中医院（顺义）",
+      "timestamp": "2026-07-23T01:13:13.673Z"
+    },
+    {
+      "id": "mrwti5ipp9",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "添加分组",
+      "detail": "妇幼医院（顺义）",
+      "timestamp": "2026-07-23T01:13:26.641Z"
+    },
+    {
+      "id": "mrwtiha8bj",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "添加分组",
+      "detail": "机场医院",
+      "timestamp": "2026-07-23T01:13:41.888Z"
+    },
+    {
+      "id": "mrwtj1ywl0",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "添加分组",
+      "detail": "李遂（地坛医院）",
+      "timestamp": "2026-07-23T01:14:08.696Z"
+    },
+    {
+      "id": "mrwtjdafxd",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "添加分组",
+      "detail": "杨镇二院",
+      "timestamp": "2026-07-23T01:14:23.367Z"
+    },
+    {
+      "id": "mrwtjvjfl5",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "添加分组",
+      "detail": "卫生院（河东）",
+      "timestamp": "2026-07-23T01:14:47.019Z"
+    },
+    {
+      "id": "mrwtk605b9",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "添加分组",
+      "detail": "卫生院（河西）",
+      "timestamp": "2026-07-23T01:15:00.581Z"
+    },
+    {
+      "id": "mrwtl6k0rt",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "添加分组",
+      "detail": "城区卫生院（石园、胜利、光明、旺泉）",
+      "timestamp": "2026-07-23T01:15:47.952Z"
+    },
+    {
+      "id": "mrwtlsaqvz",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "添加分组",
+      "detail": "社区服务站点（卫生室）",
+      "timestamp": "2026-07-23T01:16:16.130Z"
+    },
+    {
+      "id": "mrwtmhgsc9",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "添加分组",
+      "detail": "空港医院（顺义）",
+      "timestamp": "2026-07-23T01:16:48.748Z"
+    },
+    {
+      "id": "mrwtmxuxsw",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "编辑人员",
+      "detail": "刘天宇",
+      "timestamp": "2026-07-23T01:17:09.993Z"
+    },
+    {
+      "id": "mrwtn51pqt",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "编辑人员",
+      "detail": "李丽军",
+      "timestamp": "2026-07-23T01:17:19.309Z"
+    },
+    {
+      "id": "mrwtnr6hdb",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "添加分组",
+      "detail": "急救120+999",
+      "timestamp": "2026-07-23T01:17:47.993Z"
+    },
+    {
+      "id": "mrwto8hbwa",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "添加分组",
+      "detail": "养老院",
+      "timestamp": "2026-07-23T01:18:10.415Z"
+    },
+    {
+      "id": "mrwtoloffc",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "编辑人员",
+      "detail": "杜学佳",
+      "timestamp": "2026-07-23T01:18:27.519Z"
+    },
+    {
+      "id": "mrwtou1h0f",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "编辑人员",
+      "detail": "郭素针",
+      "timestamp": "2026-07-23T01:18:38.357Z"
+    },
+    {
+      "id": "mrwtp06vev",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "编辑人员",
+      "detail": "陈志刚",
+      "timestamp": "2026-07-23T01:18:46.327Z"
+    },
+    {
+      "id": "mrwtp61tpn",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "编辑人员",
+      "detail": "陈志刚",
+      "timestamp": "2026-07-23T01:18:53.921Z"
+    },
+    {
+      "id": "mrwtpn1ekp",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "编辑人员",
+      "detail": "董文浩",
+      "timestamp": "2026-07-23T01:19:15.938Z"
+    },
+    {
+      "id": "mrwtpvzs6y",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "编辑人员",
+      "detail": "张响",
+      "timestamp": "2026-07-23T01:19:27.544Z"
+    },
+    {
+      "id": "mrwtq2aeuq",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "编辑人员",
+      "detail": "董文浩",
+      "timestamp": "2026-07-23T01:19:35.702Z"
+    },
+    {
+      "id": "mrwtqlrsa4",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "编辑人员",
+      "detail": "郭素针",
+      "timestamp": "2026-07-23T01:20:00.952Z"
+    },
+    {
+      "id": "mrwtqu967v",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "编辑人员",
+      "detail": "刘天宇",
+      "timestamp": "2026-07-23T01:20:11.946Z"
+    },
+    {
+      "id": "mrwtr7khkm",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "编辑人员",
+      "detail": "杜学佳",
+      "timestamp": "2026-07-23T01:20:29.201Z"
+    },
+    {
+      "id": "mrwtrjfo5f",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "编辑人员",
+      "detail": "陈志刚",
+      "timestamp": "2026-07-23T01:20:44.580Z"
+    },
+    {
+      "id": "mrwtrqvrmq",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "编辑人员",
+      "detail": "张响",
+      "timestamp": "2026-07-23T01:20:54.231Z"
+    },
+    {
+      "id": "mrwtrzahjk",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "编辑人员",
+      "detail": "董文浩",
+      "timestamp": "2026-07-23T01:21:05.129Z"
+    },
+    {
+      "id": "mrwtshx36n",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "设置",
+      "detail": "修改系统设置",
+      "timestamp": "2026-07-23T01:21:29.271Z"
+    },
+    {
+      "id": "mrwtsyw1un",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "添加账号",
+      "detail": "zx",
+      "timestamp": "2026-07-23T01:21:51.265Z"
+    },
+    {
+      "id": "mrwttaveu5",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "添加账号",
+      "detail": "dhw",
+      "timestamp": "2026-07-23T01:22:06.794Z"
+    },
+    {
+      "id": "mrwttns4dy",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "添加账号",
+      "detail": "llj",
+      "timestamp": "2026-07-23T01:22:23.524Z"
+    },
+    {
+      "id": "mrwv422e0b",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "登录",
+      "detail": "登录系统",
+      "timestamp": "2026-07-23T01:58:28.214Z"
+    },
+    {
+      "id": "mrwv5difqz",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "编辑人员",
+      "detail": "刘天宇",
+      "timestamp": "2026-07-23T01:59:29.703Z"
+    },
+    {
+      "id": "mrwv5mmnrd",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "编辑人员",
+      "detail": "李丽军",
+      "timestamp": "2026-07-23T01:59:41.519Z"
+    },
+    {
+      "id": "mrwv5rs8ro",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "编辑人员",
+      "detail": "杜学佳",
+      "timestamp": "2026-07-23T01:59:48.200Z"
+    },
+    {
+      "id": "mrwv668yg1",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "编辑人员",
+      "detail": "张响",
+      "timestamp": "2026-07-23T02:00:06.946Z"
+    },
+    {
+      "id": "mrwv6i0zab",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "编辑人员",
+      "detail": "董文浩",
+      "timestamp": "2026-07-23T02:00:22.211Z"
+    },
+    {
+      "id": "mrwv7ox88i",
+      "userId": "u_admin",
+      "userName": "admin",
+      "role": "admin",
+      "action": "退出",
+      "detail": "退出系统",
+      "timestamp": "2026-07-23T02:01:17.804Z"
+    },
+    {
+      "id": "mrwv7uwn0g",
+      "userId": "mrwtsyw1r8",
+      "userName": "zx",
+      "role": "sales",
+      "action": "登录",
+      "detail": "登录系统",
+      "timestamp": "2026-07-23T02:01:25.559Z"
+    },
+    {
+      "id": "mrwvczyd3a",
+      "userId": "mrwtsyw1r8",
+      "userName": "zx",
+      "role": "sales",
+      "action": "登录",
+      "detail": "登录系统",
+      "timestamp": "2026-07-23T02:05:25.381Z"
+    },
+    {
+      "id": "mrwvyynsrt",
+      "userId": "mrwtsyw1r8",
+      "userName": "zx",
+      "role": "sales",
+      "action": "登录",
+      "detail": "登录系统",
+      "timestamp": "2026-07-23T02:22:30.136Z"
+    },
+    {
+      "id": "mrww4b24fa",
+      "userId": "mrwtsyw1r8",
+      "userName": "zx",
+      "role": "sales",
+      "action": "日汇报提交",
+      "detail": "张响 2条拜访+3个新增",
+      "timestamp": "2026-07-23T02:26:39.484Z"
+    },
+    {
+      "id": "mrwwcew0c1",
+      "userId": "mrwtsyw1r8",
+      "userName": "zx",
+      "role": "sales",
+      "action": "登录",
+      "detail": "登录系统",
+      "timestamp": "2026-07-23T02:32:57.696Z"
+    },
+    {
+      "id": "mrwwd8e072",
+      "userId": "mrwtsyw1r8",
+      "userName": "zx",
+      "role": "sales",
+      "action": "编辑拜访",
+      "detail": "友谊康复科（吴主任）",
+      "timestamp": "2026-07-23T02:33:35.928Z"
+    }
+  ]
+}
